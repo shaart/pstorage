@@ -16,7 +16,6 @@ import shaart.pstorage.dto.UserDto;
 import shaart.pstorage.service.EncryptionService;
 import shaart.pstorage.service.UserService;
 import shaart.pstorage.ui.util.AlertHelper;
-import shaart.pstorage.util.ExceptionUtil;
 
 /**
  * Controller for create user form.
@@ -65,60 +64,48 @@ public class LoginFormController {
 
   @FXML
   protected void login(ActionEvent event) {
+    log.trace("Handling login action");
     Window owner = loginButton.getScene().getWindow();
 
-    try {
-      log.trace("Handling login action");
-
-      List<String> errors = validateFields();
-      if (!errors.isEmpty()) {
-        showValidationAlert(owner, errors);
-        log.trace("Validation failed");
-        return;
-      }
-      log.trace("Validation success");
-
-      String encrypted = encryptionService.encrypt(passwordField.getText());
-      userService.isCorrectPasswordFor(nameField.getText(), encrypted);
-
-      showMainForm();
-    } catch (Exception e) {
-      exceptionAlert(owner, e);
+    if (showErrorIfHasInvalidField(owner)) {
+      return;
     }
+
+    String encrypted = encryptionService.encrypt(passwordField.getText());
+    userService.isCorrectPasswordFor(nameField.getText(), encrypted);
+
+    showMainForm();
   }
 
   @FXML
   protected void register(ActionEvent event) {
+    log.trace("Handling register action");
     Window owner = registerButton.getScene().getWindow();
-    try {
-      log.trace("Handling register action");
 
-      List<String> errors = validateFields();
-      if (!errors.isEmpty()) {
-        showValidationAlert(owner, errors);
-        log.trace("Validation failed");
-        return;
-      }
-      log.trace("Validation success");
-
-      String encrypted = encryptionService.encrypt(passwordField.getText());
-
-      UserDto user = UserDto.builder()
-          .name(nameField.getText())
-          .masterPassword(encrypted)
-          .build();
-      UserDto saved = userService.save(user);
-
-      log.trace("User '{}' saved successfully", saved.getName());
-    } catch (Exception e) {
-      exceptionAlert(owner, e);
+    if (showErrorIfHasInvalidField(owner)) {
+      return;
     }
+
+    String encrypted = encryptionService.encrypt(passwordField.getText());
+
+    UserDto user = UserDto.builder()
+        .name(nameField.getText())
+        .masterPassword(encrypted)
+        .build();
+    UserDto saved = userService.save(user);
+
+    log.trace("User '{}' saved successfully", saved.getName());
   }
 
-  private void exceptionAlert(Window owner, Exception e) {
-    String location = ExceptionUtil.getInstance().getLocation(e);
-    AlertHelper
-        .showAlert(AlertType.ERROR, owner, "Unknown error at " + location, e.getLocalizedMessage());
+  private boolean showErrorIfHasInvalidField(Window owner) {
+    List<String> errors = validateFields();
+    if (!errors.isEmpty()) {
+      showValidationAlert(owner, errors);
+      log.trace("Validation failed");
+      return true;
+    }
+    log.trace("Validation success");
+    return false;
   }
 
   private void showMainForm() {

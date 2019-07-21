@@ -14,6 +14,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Lazy;
 import shaart.pstorage.config.PStorageProperties;
 import shaart.pstorage.dto.ViewHolder;
+import shaart.pstorage.handler.GlobalExceptionHandler;
 import shaart.pstorage.util.ExceptionUtil;
 
 /**
@@ -51,32 +52,10 @@ public class PStorageApplication extends AbstractJavaFxApplicationSupport {
       return;
     }
 
-    Thread.setDefaultUncaughtExceptionHandler(this::uncaughtException);
+    GlobalExceptionHandler globalExceptionHandler = GlobalExceptionHandler.getInstance();
+    Thread.setDefaultUncaughtExceptionHandler(globalExceptionHandler::handle);
 
-    stage.setTitle(windowTitle);
-    stage.setScene(new Scene(viewHolder.getView()));
-    stage.setResizable(true);
-    stage.centerOnScreen();
-    stage.show();
-  }
-
-  private void showGlobalErrorWindow(Throwable exception) {
-    Stage errorStage = new Stage();
-    errorStage.setTitle("PStorage: unknown error");
-
-    BorderPane borderPane = new BorderPane();
-
-    Scene errorScene = new Scene(borderPane, 800, 600);
-    errorStage.setScene(errorScene);
-
-    final String stacktrace = exceptionUtil.getStacktrace(exception);
-    TextArea textArea = new TextArea();
-    textArea.appendText(stacktrace);
-    borderPane.setCenter(textArea);
-
-    errorStage.setResizable(true);
-    errorStage.centerOnScreen();
-    errorStage.show();
+    showMainView(stage);
   }
 
   private void showErrorWindow(Stage stage, Throwable contextLoadingException) {
@@ -98,11 +77,11 @@ public class PStorageApplication extends AbstractJavaFxApplicationSupport {
     stage.show();
   }
 
-  private void uncaughtException(Thread thread, Throwable exception) {
-    log.error(String.format("Uncaught exception at thread '%s': %s",
-        thread.getName(),
-        exception.getMessage()), exception);
-
-    showGlobalErrorWindow(exception);
+  private void showMainView(Stage stage) {
+    stage.setTitle(windowTitle);
+    stage.setScene(new Scene(viewHolder.getView()));
+    stage.setResizable(true);
+    stage.centerOnScreen();
+    stage.show();
   }
 }
