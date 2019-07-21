@@ -29,7 +29,7 @@ public class PStorageApplication extends AbstractJavaFxApplicationSupport {
   @Value("${pstorage.ui.title:PStorage}")
   private String windowTitle;
 
-  private ViewHolder viewHolder;
+  private ViewHolder initialViewHolder;
 
   private ExceptionUtil exceptionUtil = ExceptionUtil.getInstance();
 
@@ -39,8 +39,8 @@ public class PStorageApplication extends AbstractJavaFxApplicationSupport {
 
   @Autowired
   @Qualifier("loginView")
-  public void setViewHolder(ViewHolder viewHolder) {
-    this.viewHolder = viewHolder;
+  public void setInitialViewHolder(ViewHolder initialViewHolder) {
+    this.initialViewHolder = initialViewHolder;
   }
 
   @Override
@@ -55,7 +55,7 @@ public class PStorageApplication extends AbstractJavaFxApplicationSupport {
     GlobalExceptionHandler globalExceptionHandler = GlobalExceptionHandler.getInstance();
     Thread.setDefaultUncaughtExceptionHandler(globalExceptionHandler::handle);
 
-    showMainView(stage);
+    showInitialView(stage);
   }
 
   private void showErrorWindow(Stage stage, Throwable contextLoadingException) {
@@ -77,9 +77,9 @@ public class PStorageApplication extends AbstractJavaFxApplicationSupport {
     stage.show();
   }
 
-  private void showMainView(Stage stage) {
+  private void showInitialView(Stage stage) {
     stage.setTitle(windowTitle);
-    stage.setScene(new Scene(viewHolder.getView()));
+    stage.setScene(new Scene(initialViewHolder.getView()));
     stage.setResizable(true);
     stage.centerOnScreen();
     stage.show();

@@ -3,16 +3,23 @@ package shaart.pstorage.ui;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
 import javafx.stage.Window;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import shaart.pstorage.config.PStorageProperties;
 import shaart.pstorage.dto.UserDto;
+import shaart.pstorage.dto.ViewHolder;
 import shaart.pstorage.service.EncryptionService;
 import shaart.pstorage.service.UserService;
 import shaart.pstorage.ui.util.AlertHelper;
@@ -28,6 +35,10 @@ public class LoginFormController {
   private static final String CANNOT_BE_EMPTY = "%s cannot be empty";
   private static final String PASS = "Password";
   private static final String USERNAME = "Username";
+
+  @Autowired
+  @Qualifier("mainView")
+  private ViewHolder mainViewHolder;
 
   @Autowired
   private UserService userService;
@@ -75,6 +86,7 @@ public class LoginFormController {
     userService.isCorrectPasswordFor(nameField.getText(), encrypted);
 
     showMainForm();
+    closeLoginForm(event);
   }
 
   @FXML
@@ -97,6 +109,11 @@ public class LoginFormController {
     log.trace("User '{}' saved successfully", saved.getName());
   }
 
+  private void closeLoginForm(Event event) {
+    Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
+    window.close();
+  }
+
   private boolean showErrorIfHasInvalidField(Window owner) {
     List<String> errors = validateFields();
     if (!errors.isEmpty()) {
@@ -109,7 +126,17 @@ public class LoginFormController {
   }
 
   private void showMainForm() {
-    throw new UnsupportedOperationException("Not implemented");
+    Stage stage = new Stage();
+
+    String title = pStorageProperties.getUi().getTitle();
+    stage.setTitle(title);
+
+    Parent mainFormView = mainViewHolder.getView();
+    stage.setScene(new Scene(mainFormView));
+
+    stage.setResizable(true);
+    stage.centerOnScreen();
+    stage.show();
   }
 
   private void showValidationAlert(Window owner, List<String> errors) {

@@ -11,6 +11,13 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class PStorageProperties {
 
   private Validation validation;
+  private Ui ui;
+
+  @Getter
+  @Setter
+  public static class Ui {
+    private String title;
+  }
 
   @Getter
   @Setter
