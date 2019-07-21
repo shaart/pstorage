@@ -59,7 +59,7 @@ public class MainFormController {
     aliasColumn.setCellValueFactory(new PropertyValueFactory<>("alias"));
 
     TableColumn<PasswordDto, String> passwordColumn = new TableColumn<>("Password");
-    passwordColumn.setCellValueFactory(new PropertyValueFactory<>("encryptedValue"));
+    passwordColumn.setCellValueFactory(new PropertyValueFactory<>("value"));
 
     table.getColumns().add(0, idColumn);
     table.getColumns().add(1, aliasColumn);

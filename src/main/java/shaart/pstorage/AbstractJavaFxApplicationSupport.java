@@ -9,6 +9,7 @@ import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -20,6 +21,9 @@ import org.springframework.context.ConfigurableApplicationContext;
 public abstract class AbstractJavaFxApplicationSupport extends Application {
 
   private static String[] savedArgs;
+
+  @Getter
+  private Exception contextLoadingException;
 
   private ConfigurableApplicationContext context;
   private Stage splashScreen;
@@ -46,15 +50,11 @@ public abstract class AbstractJavaFxApplicationSupport extends Application {
       context.getAutowireCapableBeanFactory().autowireBean(this);
     } catch (Exception e) {
       log.error(e.getLocalizedMessage(), e);
-      Platform.runLater(this::errorWindow);
+      contextLoadingException = e;
+    } finally {
+      log.trace("Destroying splash screen");
+      Platform.runLater(this::closeSplash);
     }
-
-    log.trace("Destroying splash screen");
-    Platform.runLater(this::closeSplash);
-  }
-
-  private void errorWindow() {
-    log.warn("Error window is not implemented");
   }
 
   @Override

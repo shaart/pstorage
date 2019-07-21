@@ -1,0 +1,47 @@
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+  <changeSet id="201907211500-create-table-user" author="artur.shalaev">
+    <createTable tableName="user">
+      <column name="id" autoIncrement="1" type="int">
+        <constraints nullable="false" unique="true" primaryKey="true"/>
+      </column>
+      <column name="name" type="varchar(255)">
+        <constraints nullable="false" unique="true"/>
+      </column>
+      <column name="master_password" type="varchar(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="created_at" type="timestamp" defaultValueComputed="now()">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+
+  <changeSet id="201907211501-create-table-password" author="artur.shalaev">
+    <preConditions>
+      <tableExists tableName="user"/>
+      <columnExists tableName="user" columnName="id"/>
+    </preConditions>
+    <createTable tableName="password">
+      <column name="id" autoIncrement="1" type="int">
+        <constraints nullable="false" unique="true" primaryKey="true"/>
+      </column>
+      <column name="user_id" type="int">
+        <constraints nullable="false" foreignKeyName="fk_password_user" references="user(id)"/>
+      </column>
+      <column name="alias" type="varchar(255)">
+        <constraints nullable="false" unique="true"/>
+      </column>
+      <column name="value" type="varchar(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="created_at" type="timestamp" defaultValueDate="now()">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+  </changeSet>
+</databaseChangeLog>
