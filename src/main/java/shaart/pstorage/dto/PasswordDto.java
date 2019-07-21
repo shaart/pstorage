@@ -18,6 +18,8 @@ public class PasswordDto {
 
   private String id;
 
+  private UserDto user;
+
   private String alias;
 
   @ToString.Exclude

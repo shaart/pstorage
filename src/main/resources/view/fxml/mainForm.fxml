@@ -28,7 +28,6 @@
         <Insets right="3.0"/>
       </HBox.margin>
     </TextField>
-    <Button minWidth="-Infinity" mnemonicParsing="false" onAction="#addPassword"
-      text="Add"/>
+    <Button minWidth="-Infinity" mnemonicParsing="false" onAction="#addPassword" text="Add"/>
   </HBox>
 </AnchorPane>

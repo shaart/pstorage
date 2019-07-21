@@ -9,6 +9,10 @@ public class AlertHelper {
     throw new UnsupportedOperationException("Utility class");
   }
 
+  public static void showAlert(Alert.AlertType alertType, String title, String message) {
+    showAlert(alertType, null, title, message);
+  }
+
   public static void showAlert(Alert.AlertType alertType, Window owner, String title,
       String message) {
     Alert alert = new Alert(alertType);

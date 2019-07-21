@@ -36,6 +36,17 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
+  public Optional<UserDto> findByName(String username) {
+    Optional<User> user = repository.findByName(username);
+    if (!user.isPresent()) {
+      return Optional.empty();
+    }
+
+    User foundUser = user.get();
+    return Optional.ofNullable(userConverter.toDto(foundUser));
+  }
+
+  @Override
   public boolean isCorrectPasswordFor(String username, String password) {
     Optional<User> user = repository.findByName(username);
     if (!user.isPresent()) {

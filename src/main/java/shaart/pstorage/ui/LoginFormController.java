@@ -1,6 +1,7 @@
 package shaart.pstorage.ui;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
@@ -21,6 +22,7 @@ import shaart.pstorage.config.PStorageProperties;
 import shaart.pstorage.dto.UserDto;
 import shaart.pstorage.dto.ViewHolder;
 import shaart.pstorage.service.EncryptionService;
+import shaart.pstorage.service.SecurityAwareService;
 import shaart.pstorage.service.UserService;
 import shaart.pstorage.ui.util.AlertHelper;
 
@@ -45,6 +47,9 @@ public class LoginFormController {
 
   @Autowired
   private EncryptionService encryptionService;
+
+  @Autowired
+  private SecurityAwareService securityAwareService;
 
   @Autowired
   private PStorageProperties pStorageProperties;
@@ -83,11 +88,18 @@ public class LoginFormController {
     }
 
     String encrypted = encryptionService.encrypt(passwordField.getText());
-    userService.isCorrectPasswordFor(nameField.getText(), encrypted);
+    boolean isCorrectCredentials = userService.isCorrectPasswordFor(nameField.getText(), encrypted);
+    if (!isCorrectCredentials) {
+      showValidationAlert(owner, Collections.singletonList("Incorrect username or password"));
+      return;
+    }
+
+    logUserIn();
 
     showMainForm();
     closeLoginForm(event);
   }
+
 
   @FXML
   protected void register(ActionEvent event) {
@@ -112,6 +124,13 @@ public class LoginFormController {
   private void closeLoginForm(Event event) {
     Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
     window.close();
+  }
+
+  private void logUserIn() {
+    String username = nameField.getText();
+    String password = passwordField.getText();
+
+    securityAwareService.authorize(username, password);
   }
 
   private boolean showErrorIfHasInvalidField(Window owner) {

@@ -38,6 +38,6 @@ public class Password implements Serializable {
   @Column(name = "value", nullable = false, unique = true)
   private String value;
 
-  @Column(name = "created_at", nullable = false)
+  @Column(name = "created_at", columnDefinition = "timestamp default now()")
   private Timestamp createdAt;
 }
