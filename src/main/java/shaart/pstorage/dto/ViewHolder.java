@@ -1,6 +1,7 @@
 package shaart.pstorage.dto;
 
 import javafx.scene.Parent;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import shaart.pstorage.PStorageApplication;
@@ -11,17 +12,13 @@ import shaart.pstorage.PStorageApplication;
  */
 @Getter
 @Setter
-public class ViewHolder {
+@AllArgsConstructor
+public class ViewHolder<T> {
 
   private Parent view;
-  private Object controller;
+  private T controller;
 
-  private ViewHolder(Parent view, Object controller) {
-    this.view = view;
-    this.controller = controller;
-  }
-
-  public static ViewHolder of(Parent view, Object controller) {
-    return new ViewHolder(view, controller);
+  public static <T> ViewHolder<T> of(Parent view, T controller) {
+    return new ViewHolder<>(view, controller);
   }
 }

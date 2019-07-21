@@ -5,28 +5,42 @@ import javafx.scene.Scene;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Lazy;
+import shaart.pstorage.config.PStorageProperties;
 import shaart.pstorage.dto.ViewHolder;
+import shaart.pstorage.handler.GlobalExceptionHandler;
 import shaart.pstorage.util.ExceptionUtil;
 
 /**
  * Application entry point.
  */
 @Lazy
+@Slf4j
 @SpringBootApplication
+@EnableConfigurationProperties(PStorageProperties.class)
 public class PStorageApplication extends AbstractJavaFxApplicationSupport {
 
-  @Value("${ui.title:JavaFX приложение}")
+  @Value("${pstorage.ui.title:PStorage}")
   private String windowTitle;
 
-  private ViewHolder viewHolder;
+  private ViewHolder initialViewHolder;
+
+  private ExceptionUtil exceptionUtil = ExceptionUtil.getInstance();
 
   public static void main(String[] args) {
     launchApp(args);
+  }
+
+  @Autowired
+  @Qualifier("loginView")
+  public void setInitialViewHolder(ViewHolder initialViewHolder) {
+    this.initialViewHolder = initialViewHolder;
   }
 
   @Override
@@ -38,20 +52,13 @@ public class PStorageApplication extends AbstractJavaFxApplicationSupport {
       return;
     }
 
-    stage.setTitle(windowTitle);
-    stage.setScene(new Scene(viewHolder.getView()));
-    stage.setResizable(true);
-    stage.centerOnScreen();
-    stage.show();
+    GlobalExceptionHandler globalExceptionHandler = GlobalExceptionHandler.getInstance();
+    Thread.setDefaultUncaughtExceptionHandler(globalExceptionHandler::handle);
+
+    showInitialView(stage);
   }
 
-  @Autowired
-  @Qualifier("mainView")
-  public void setViewHolder(ViewHolder viewHolder) {
-    this.viewHolder = viewHolder;
-  }
-
-  private void showErrorWindow(Stage stage, Exception contextLoadingException) {
+  private void showErrorWindow(Stage stage, Throwable contextLoadingException) {
     stage.setTitle("PStorage: Initialization error");
 
     BorderPane borderPane = new BorderPane();
@@ -59,12 +66,20 @@ public class PStorageApplication extends AbstractJavaFxApplicationSupport {
     Scene scene = new Scene(borderPane, 800, 600);
     TextArea textArea = new TextArea();
 
-    final String stacktrace = ExceptionUtil.getInstance().getStacktrace(contextLoadingException);
+    final String stacktrace = exceptionUtil.getStacktrace(contextLoadingException);
     textArea.appendText("An error occurred on application initialization:\n");
     textArea.appendText(stacktrace);
     borderPane.setCenter(textArea);
 
     stage.setScene(scene);
+    stage.setResizable(true);
+    stage.centerOnScreen();
+    stage.show();
+  }
+
+  private void showInitialView(Stage stage) {
+    stage.setTitle(windowTitle);
+    stage.setScene(new Scene(initialViewHolder.getView()));
     stage.setResizable(true);
     stage.centerOnScreen();
     stage.show();

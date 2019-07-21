@@ -13,5 +13,5 @@ public interface ViewLoader {
    * @param resourceUrl path to resource
    * @return wrapper with view and controller
    */
-  ViewHolder loadView(String resourceUrl) throws IOException;
+  <T> ViewHolder<T> loadView(String resourceUrl) throws IOException;
 }

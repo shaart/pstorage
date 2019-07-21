@@ -20,7 +20,7 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-class User implements Serializable {
+public class User implements Serializable {
 
   @Id
   @GeneratedValue
@@ -32,6 +32,6 @@ class User implements Serializable {
   @Column(name = "master_password", nullable = false)
   private String masterPassword;
 
-  @Column(name = "created_at", nullable = false)
+  @Column(name = "created_at", columnDefinition = "timestamp default now()")
   private Timestamp createdAt;
 }

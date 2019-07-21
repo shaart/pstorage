@@ -5,9 +5,14 @@
          http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
   <changeSet id="201907211500-create-table-user" author="artur.shalaev">
+    <preConditions>
+      <not>
+        <tableExists schemaName="public" tableName="user"/>
+      </not>
+    </preConditions>
     <createTable tableName="user">
       <column name="id" autoIncrement="1" type="int">
-        <constraints nullable="false" unique="true" primaryKey="true"/>
+        <constraints unique="true" primaryKey="true"/>
       </column>
       <column name="name" type="varchar(255)">
         <constraints nullable="false" unique="true"/>
@@ -15,20 +20,21 @@
       <column name="master_password" type="varchar(255)">
         <constraints nullable="false"/>
       </column>
-      <column name="created_at" type="timestamp" defaultValueComputed="now()">
-        <constraints nullable="false"/>
-      </column>
+      <column name="created_at" type="timestamp" defaultValueComputed="now()"/>
     </createTable>
   </changeSet>
 
   <changeSet id="201907211501-create-table-password" author="artur.shalaev">
     <preConditions>
+      <not>
+        <tableExists schemaName="public" tableName="password"/>
+      </not>
       <tableExists tableName="user"/>
       <columnExists tableName="user" columnName="id"/>
     </preConditions>
     <createTable tableName="password">
       <column name="id" autoIncrement="1" type="int">
-        <constraints nullable="false" unique="true" primaryKey="true"/>
+        <constraints unique="true" primaryKey="true"/>
       </column>
       <column name="user_id" type="int">
         <constraints nullable="false" foreignKeyName="fk_password_user" references="user(id)"/>
@@ -39,9 +45,7 @@
       <column name="value" type="varchar(255)">
         <constraints nullable="false"/>
       </column>
-      <column name="created_at" type="timestamp" defaultValueDate="now()">
-        <constraints nullable="false"/>
-      </column>
+      <column name="created_at" type="timestamp" defaultValueDate="now()"/>
     </createTable>
   </changeSet>
 </databaseChangeLog>

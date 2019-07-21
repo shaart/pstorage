@@ -14,14 +14,14 @@ import lombok.ToString;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class PasswordDto {
+public class UserDto {
 
   private String id;
 
-  private String alias;
+  private String name;
 
   @ToString.Exclude
-  private String encryptedValue;
+  private String masterPassword;
 
   private LocalDateTime createdAt;
 }
