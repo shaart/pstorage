@@ -20,7 +20,7 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-class User implements Serializable {
+public class User implements Serializable {
 
   @Id
   @GeneratedValue

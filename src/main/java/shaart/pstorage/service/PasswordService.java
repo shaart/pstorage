@@ -5,8 +5,8 @@ import shaart.pstorage.dto.PasswordDto;
 
 public interface PasswordService {
 
-  PasswordDto save(PasswordDto password);
-
   List<PasswordDto> findAll();
+
+  PasswordDto save(PasswordDto password);
 
 }

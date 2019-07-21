@@ -1,0 +1,164 @@
+package shaart.pstorage.ui;
+
+import java.util.ArrayList;
+import java.util.List;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
+import javafx.stage.Window;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import shaart.pstorage.config.PStorageProperties;
+import shaart.pstorage.dto.UserDto;
+import shaart.pstorage.service.EncryptionService;
+import shaart.pstorage.service.UserService;
+import shaart.pstorage.ui.util.AlertHelper;
+import shaart.pstorage.util.ExceptionUtil;
+
+/**
+ * Controller for create user form.
+ */
+@Slf4j
+public class LoginFormController {
+
+  private static final String LESS_THAN_MAX_SYMBOLS = "%s should contain less than %d symbols";
+  private static final String MORE_THAN_MIN_SYMBOLS = "%s should contain more than %d symbols";
+  private static final String CANNOT_BE_EMPTY = "%s cannot be empty";
+  private static final String PASS = "Password";
+  private static final String USERNAME = "Username";
+
+  @Autowired
+  private UserService userService;
+
+  @Autowired
+  private EncryptionService encryptionService;
+
+  @Autowired
+  private PStorageProperties pStorageProperties;
+
+  // JavaFX Injections
+  @FXML
+  private TextField nameField;
+
+  @FXML
+  private PasswordField passwordField;
+
+  @FXML
+  private Button loginButton;
+
+  @FXML
+  private Button registerButton;
+
+  /**
+   * <p>Initialization of JavaFX controller. Method is called after fields injection by FXML
+   * loader.</p>
+   * <p>This method must be called "initialize" otherwise it won't be called.</p>
+   * <p>On this stage spring's beans are not initialized.</p>
+   */
+  @FXML
+  public void initialize() {
+    // Do nothing.
+  }
+
+  @FXML
+  protected void login(ActionEvent event) {
+    Window owner = loginButton.getScene().getWindow();
+
+    try {
+      log.trace("Handling login action");
+
+      List<String> errors = validateFields();
+      if (!errors.isEmpty()) {
+        showValidationAlert(owner, errors);
+        log.trace("Validation failed");
+        return;
+      }
+      log.trace("Validation success");
+
+      String encrypted = encryptionService.encrypt(passwordField.getText());
+      userService.isCorrectPasswordFor(nameField.getText(), encrypted);
+
+      showMainForm();
+    } catch (Exception e) {
+      exceptionAlert(owner, e);
+    }
+  }
+
+  @FXML
+  protected void register(ActionEvent event) {
+    Window owner = registerButton.getScene().getWindow();
+    try {
+      log.trace("Handling register action");
+
+      List<String> errors = validateFields();
+      if (!errors.isEmpty()) {
+        showValidationAlert(owner, errors);
+        log.trace("Validation failed");
+        return;
+      }
+      log.trace("Validation success");
+
+      String encrypted = encryptionService.encrypt(passwordField.getText());
+
+      UserDto user = UserDto.builder()
+          .name(nameField.getText())
+          .masterPassword(encrypted)
+          .build();
+      UserDto saved = userService.save(user);
+
+      log.trace("User '{}' saved successfully", saved.getName());
+    } catch (Exception e) {
+      exceptionAlert(owner, e);
+    }
+  }
+
+  private void exceptionAlert(Window owner, Exception e) {
+    String location = ExceptionUtil.getInstance().getLocation(e);
+    AlertHelper
+        .showAlert(AlertType.ERROR, owner, "Unknown error at " + location, e.getLocalizedMessage());
+  }
+
+  private void showMainForm() {
+    throw new UnsupportedOperationException("Not implemented");
+  }
+
+  private void showValidationAlert(Window owner, List<String> errors) {
+    String errorMessage = String.join("; ", errors);
+
+    AlertHelper.showAlert(AlertType.ERROR, owner, "Validation form error", errorMessage);
+  }
+
+  private List<String> validateFields() {
+    List<String> errors = new ArrayList<>();
+
+    String username = nameField.getText();
+    if (username.isEmpty()) {
+      errors.add(String.format(CANNOT_BE_EMPTY, USERNAME));
+    } else {
+      Integer maxLength = pStorageProperties.getValidation().getUsername().getLength().getMax();
+      if (username.length() > maxLength) {
+        errors.add(String.format(LESS_THAN_MAX_SYMBOLS, USERNAME, maxLength));
+      }
+    }
+
+    String password = passwordField.getText();
+    if (password.isEmpty()) {
+      errors.add(String.format(CANNOT_BE_EMPTY, PASS));
+    } else {
+      Integer minLength = pStorageProperties.getValidation().getPassword().getLength().getMin();
+      if (password.length() < minLength) {
+        errors.add(String.format(MORE_THAN_MIN_SYMBOLS, PASS, minLength));
+      } else {
+        Integer maxLength = pStorageProperties.getValidation().getPassword().getLength().getMax();
+        if (password.length() > maxLength) {
+          errors.add(String.format(LESS_THAN_MAX_SYMBOLS, PASS, maxLength));
+        }
+      }
+    }
+
+    return errors;
+  }
+}

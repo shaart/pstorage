@@ -12,7 +12,7 @@ import shaart.pstorage.loader.ViewLoader;
 public class ViewLoaderImpl implements ViewLoader {
 
   @Override
-  public ViewHolder loadView(String resourceUrl) throws IOException {
+  public <T> ViewHolder<T> loadView(String resourceUrl) throws IOException {
     try (InputStream fxmlStream = getClass().getClassLoader().getResourceAsStream(resourceUrl)) {
       FXMLLoader loader = new FXMLLoader();
 

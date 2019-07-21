@@ -10,5 +10,5 @@ public interface PasswordConverter {
 
   Password toEntity(PasswordDto passwordDto);
 
-  PasswordDto toDto(Password savedPassword);
+  PasswordDto toDto(Password passwordEntity);
 }
