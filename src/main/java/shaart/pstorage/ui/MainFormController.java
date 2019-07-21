@@ -17,6 +17,7 @@ import shaart.pstorage.dto.PasswordDto;
 import shaart.pstorage.dto.UserDto;
 import shaart.pstorage.service.PasswordService;
 import shaart.pstorage.service.SecurityAwareService;
+import shaart.pstorage.ui.component.PasswordCellValueFactory;
 import shaart.pstorage.ui.util.AlertHelper;
 
 /**
@@ -69,7 +70,7 @@ public class MainFormController {
     aliasColumn.setCellValueFactory(new PropertyValueFactory<>("alias"));
 
     TableColumn<PasswordDto, String> passwordColumn = new TableColumn<>("Password");
-    passwordColumn.setCellValueFactory(new PropertyValueFactory<>("value"));
+    passwordColumn.setCellValueFactory(new PasswordCellValueFactory<>("encryptedValue"));
 
     table.getColumns().add(0, idColumn);
     table.getColumns().add(1, aliasColumn);

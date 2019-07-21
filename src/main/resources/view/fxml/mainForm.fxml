@@ -6,6 +6,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.PasswordField?>
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
   prefHeight="300.0" prefWidth="405.0" xmlns="http://javafx.com/javafx/8"
   xmlns:fx="http://javafx.com/fxml/1" fx:controller="shaart.pstorage.ui.MainFormController">
@@ -23,11 +24,11 @@
         <Insets right="3.0"/>
       </HBox.margin>
     </TextField>
-    <TextField fx:id="txtEncryptedValue" promptText="Password">
+    <PasswordField fx:id="txtEncryptedValue" promptText="Password">
       <HBox.margin>
         <Insets right="3.0"/>
       </HBox.margin>
-    </TextField>
+    </PasswordField>
     <Button minWidth="-Infinity" mnemonicParsing="false" onAction="#addPassword" text="Add"/>
   </HBox>
 </AnchorPane>
