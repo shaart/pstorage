@@ -21,15 +21,15 @@ public class PasswordServiceImpl implements PasswordService {
 
   @Override
   public PasswordDto save(PasswordDto passwordDto) {
-    Password password = passwordConverter.convert(passwordDto);
+    Password password = passwordConverter.toEntity(passwordDto);
     final Password savedPassword = repository.save(password);
-    return passwordConverter.convert(savedPassword);
+    return passwordConverter.toDto(savedPassword);
   }
 
   @Override
   public List<PasswordDto> findAll() {
     return repository.findAll().stream()
-        .map(passwordConverter::convert)
+        .map(passwordConverter::toDto)
         .collect(Collectors.toList());
   }
 }

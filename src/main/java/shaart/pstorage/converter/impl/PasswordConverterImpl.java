@@ -11,24 +11,24 @@ import shaart.pstorage.entity.Password;
 public class PasswordConverterImpl implements PasswordConverter {
 
   @Override
-  public Password convert(PasswordDto passwordDto) {
-    final Long id = isNull(passwordDto.getId()) ? null : Long.valueOf(passwordDto.getId());
+  public Password toEntity(PasswordDto passwordDto) {
+    final Integer id = isNull(passwordDto.getId()) ? null : Integer.valueOf(passwordDto.getId());
 
     return Password.builder()
         .id(id)
         .alias(passwordDto.getAlias())
-        .encryptedValue(passwordDto.getEncryptedValue())
+        .value(passwordDto.getEncryptedValue())
         .build();
   }
 
   @Override
-  public PasswordDto convert(Password savedPassword) {
+  public PasswordDto toDto(Password savedPassword) {
     final String id = isNull(savedPassword.getId()) ? "" : savedPassword.getId().toString();
 
     return PasswordDto.builder()
         .id(id)
         .alias(savedPassword.getAlias())
-        .encryptedValue(savedPassword.getEncryptedValue())
+        .encryptedValue(savedPassword.getValue())
         .build();
   }
 }

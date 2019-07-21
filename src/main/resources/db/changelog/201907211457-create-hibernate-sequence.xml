@@ -1,0 +1,10 @@
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+  <changeSet id="201907211457-create-hibernate-sequence" author="artur.shalaev">
+    <createSequence schemaName="public" sequenceName="hibernate_sequence" incrementBy="1"/>
+  </changeSet>
+</databaseChangeLog>
