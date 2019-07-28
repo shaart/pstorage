@@ -52,7 +52,7 @@ public class LoginFormController {
   private SecurityAwareService securityAwareService;
 
   @Autowired
-  private PStorageProperties pStorageProperties;
+  private PStorageProperties pstorageProperties;
 
   // JavaFX Injections
   @FXML
@@ -147,7 +147,7 @@ public class LoginFormController {
   private void showMainForm() {
     Stage stage = new Stage();
 
-    String title = pStorageProperties.getUi().getTitle();
+    String title = pstorageProperties.getUi().getTitle();
     stage.setTitle(title);
 
     Parent mainFormView = mainViewHolder.getView();
@@ -171,7 +171,7 @@ public class LoginFormController {
     if (username.isEmpty()) {
       errors.add(String.format(CANNOT_BE_EMPTY, USERNAME));
     } else {
-      Integer maxLength = pStorageProperties.getValidation().getUsername().getLength().getMax();
+      Integer maxLength = pstorageProperties.getValidation().getUsername().getLength().getMax();
       if (username.length() > maxLength) {
         errors.add(String.format(LESS_THAN_MAX_SYMBOLS, USERNAME, maxLength));
       }
@@ -181,11 +181,11 @@ public class LoginFormController {
     if (password.isEmpty()) {
       errors.add(String.format(CANNOT_BE_EMPTY, PASS));
     } else {
-      Integer minLength = pStorageProperties.getValidation().getPassword().getLength().getMin();
+      Integer minLength = pstorageProperties.getValidation().getPassword().getLength().getMin();
       if (password.length() < minLength) {
         errors.add(String.format(MORE_THAN_MIN_SYMBOLS, PASS, minLength));
       } else {
-        Integer maxLength = pStorageProperties.getValidation().getPassword().getLength().getMax();
+        Integer maxLength = pstorageProperties.getValidation().getPassword().getLength().getMax();
         if (password.length() > maxLength) {
           errors.add(String.format(LESS_THAN_MAX_SYMBOLS, PASS, maxLength));
         }

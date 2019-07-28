@@ -61,16 +61,16 @@ public class PStorageApplication extends AbstractJavaFxApplicationSupport {
   private void showErrorWindow(Stage stage, Throwable contextLoadingException) {
     stage.setTitle("PStorage: Initialization error");
 
-    BorderPane borderPane = new BorderPane();
-
-    Scene scene = new Scene(borderPane, 800, 600);
-    TextArea textArea = new TextArea();
-
     final String stacktrace = exceptionUtil.getStacktrace(contextLoadingException);
+
+    TextArea textArea = new TextArea();
     textArea.appendText("An error occurred on application initialization:\n");
     textArea.appendText(stacktrace);
+
+    BorderPane borderPane = new BorderPane();
     borderPane.setCenter(textArea);
 
+    Scene scene = new Scene(borderPane, 800, 600);
     stage.setScene(scene);
     stage.setResizable(true);
     stage.centerOnScreen();
