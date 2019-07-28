@@ -4,7 +4,10 @@ import java.nio.charset.Charset;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.List;
+import javax.annotation.PostConstruct;
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
@@ -25,8 +28,36 @@ public class EncryptionServiceImpl implements EncryptionService {
   private static final String UTF_8 = "UTF-8";
   private static final String ENCRYPT_TYPE = "AES";
   private static final String CYPHER_ALGORITHM = "AES/CBC/PKCS5PADDING";
+  private static final int CIPHER_IV_PARAM_SPEC_REQUIRED_BYTES_LENGTH = 16;
+  private static final Charset CHARSET = Charset.forName(UTF_8);
 
   private final PStorageProperties pstorageProperties;
+
+  @PostConstruct
+  void validateProperties() {
+    final String vector = pstorageProperties.getAes().getCommon().getVector();
+    byte[] vectorBytes = vector.getBytes(CHARSET);
+
+    List<String> errors = new ArrayList<>();
+    if (vectorBytes.length != CIPHER_IV_PARAM_SPEC_REQUIRED_BYTES_LENGTH) {
+      errors.add(String.format(
+          "Cipher requires iv parameter spec with 16-length bytes array. Found length: %d",
+          vectorBytes.length));
+    }
+
+    final String key = pstorageProperties.getAes().getCommon().getKey();
+    byte[] keyBytes = key.getBytes(CHARSET);
+
+    if (keyBytes.length != CIPHER_IV_PARAM_SPEC_REQUIRED_BYTES_LENGTH) {
+      errors.add(String.format(
+          "Cipher requires key with 16-length bytes array. Found length: %d",
+          vectorBytes.length));
+    }
+
+    if (!errors.isEmpty()) {
+      throw new CryptoException(errors.toString());
+    }
+  }
 
   @Override
   public String encrypt(String value) {
@@ -70,9 +101,8 @@ public class EncryptionServiceImpl implements EncryptionService {
     String vector = pstorageProperties.getAes().getCommon().getVector();
     String key = pstorageProperties.getAes().getCommon().getKey();
 
-    IvParameterSpec ivParameterSpec = new IvParameterSpec(vector.getBytes(Charset.forName(UTF_8)));
-    SecretKeySpec secretKeySpec = new SecretKeySpec(key.getBytes(Charset.forName(UTF_8)),
-        ENCRYPT_TYPE);
+    IvParameterSpec ivParameterSpec = new IvParameterSpec(vector.getBytes(CHARSET));
+    SecretKeySpec secretKeySpec = new SecretKeySpec(key.getBytes(CHARSET), ENCRYPT_TYPE);
 
     Cipher instance = Cipher.getInstance(CYPHER_ALGORITHM);
 
