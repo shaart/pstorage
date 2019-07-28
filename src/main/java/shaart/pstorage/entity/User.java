@@ -5,7 +5,9 @@ import java.sql.Timestamp;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,7 +25,9 @@ import lombok.Setter;
 public class User implements Serializable {
 
   @Id
-  @GeneratedValue
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_id_generator")
+  @SequenceGenerator(name = "user_id_generator", sequenceName = "seq_user",
+      allocationSize = 1)
   private Integer id;
 
   @Column(name = "name", nullable = false, unique = true)
