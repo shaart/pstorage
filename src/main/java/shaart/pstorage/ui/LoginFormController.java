@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import shaart.pstorage.config.PStorageProperties;
+import shaart.pstorage.dto.CryptoDto;
 import shaart.pstorage.dto.UserDto;
 import shaart.pstorage.dto.ViewHolder;
 import shaart.pstorage.service.EncryptionService;
@@ -87,7 +88,7 @@ public class LoginFormController {
       return;
     }
 
-    String encrypted = encryptionService.encrypt(passwordField.getText());
+    String encrypted = encryptionService.encrypt(CryptoDto.of(passwordField.getText()));
     boolean isCorrectCredentials = userService.isCorrectPasswordFor(nameField.getText(), encrypted);
     if (!isCorrectCredentials) {
       showValidationAlert(owner, Collections.singletonList("Incorrect username or password"));
@@ -110,7 +111,7 @@ public class LoginFormController {
       return;
     }
 
-    String encrypted = encryptionService.encrypt(passwordField.getText());
+    String encrypted = encryptionService.encrypt(CryptoDto.of(passwordField.getText()));
 
     UserDto user = UserDto.builder()
         .name(nameField.getText())

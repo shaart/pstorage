@@ -1,23 +1,11 @@
 package shaart.pstorage.service.impl;
 
-import java.nio.charset.Charset;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
-import javax.annotation.PostConstruct;
-import javax.crypto.Cipher;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import shaart.pstorage.config.PStorageProperties;
-import shaart.pstorage.exception.CryptoException;
+import shaart.pstorage.crypto.AesCoder;
+import shaart.pstorage.dto.CryptoDto;
 import shaart.pstorage.service.EncryptionService;
 
 @Slf4j
@@ -25,101 +13,30 @@ import shaart.pstorage.service.EncryptionService;
 @RequiredArgsConstructor
 public class EncryptionServiceImpl implements EncryptionService {
 
-  private static final String UTF_8 = "UTF-8";
-  private static final String ENCRYPT_TYPE = "AES";
-  private static final String CYPHER_ALGORITHM = "AES/CBC/PKCS5PADDING";
-  private static final int CIPHER_IV_PARAM_SPEC_REQUIRED_BYTES_LENGTH = 16;
-  private static final Charset CHARSET = Charset.forName(UTF_8);
-
   private final PStorageProperties pstorageProperties;
-
-  @PostConstruct
-  void validateProperties() {
-    final String vector = pstorageProperties.getAes().getCommon().getVector();
-    byte[] vectorBytes = vector.getBytes(CHARSET);
-
-    List<String> errors = new ArrayList<>();
-    if (vectorBytes.length != CIPHER_IV_PARAM_SPEC_REQUIRED_BYTES_LENGTH) {
-      errors.add(String.format(
-          "Cipher requires iv parameter spec with 16-length bytes array. Found length: %d",
-          vectorBytes.length));
-    }
-
-    final String key = pstorageProperties.getAes().getCommon().getKey();
-    byte[] keyBytes = key.getBytes(CHARSET);
-
-    if (keyBytes.length != CIPHER_IV_PARAM_SPEC_REQUIRED_BYTES_LENGTH) {
-      errors.add(String.format(
-          "Cipher requires key with 16-length bytes array. Found length: %d",
-          vectorBytes.length));
-    }
-
-    if (!errors.isEmpty()) {
-      throw new CryptoException(errors.toString());
-    }
-  }
+  private final AesCoder aesCoder;
 
   @Override
-  public String encrypt(String value) {
-    try {
-      Cipher cipher = this.newCipherInstance(CipherMode.ENCRYPT);
-
-      byte[] encrypted = cipher.doFinal(value.getBytes());
-      return new String(Base64.getEncoder().encode(encrypted));
-    } catch (Exception e) {
-      log.error(e.getLocalizedMessage(), e);
-      throw new CryptoException(e);
-    }
-  }
-
-  @Override
-  public String encrypt(String value, String key) {
-    throw new UnsupportedOperationException("Not implemented");
-  }
-
-  @Override
-  public String decrypt(String value) {
-    try {
-      Cipher cipher = this.newCipherInstance(CipherMode.DECRYPT);
-      byte[] original = cipher.doFinal(Base64.getDecoder().decode(value));
-
-      return new String(original);
-    } catch (Exception e) {
-      log.error(e.getLocalizedMessage(), e);
-      throw new CryptoException(e);
-    }
-  }
-
-  @Override
-  public String decrypt(String value, String key) {
-    throw new UnsupportedOperationException("Not implemented");
-  }
-
-  private Cipher newCipherInstance(CipherMode mode)
-      throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidAlgorithmParameterException,
-      InvalidKeyException {
-    String vector = pstorageProperties.getAes().getCommon().getVector();
+  public String decrypt(CryptoDto decryptionDto) {
     String key = pstorageProperties.getAes().getCommon().getKey();
 
-    IvParameterSpec ivParameterSpec = new IvParameterSpec(vector.getBytes(CHARSET));
-    SecretKeySpec secretKeySpec = new SecretKeySpec(key.getBytes(CHARSET), ENCRYPT_TYPE);
-
-    Cipher instance = Cipher.getInstance(CYPHER_ALGORITHM);
-
-    instance.init(mode.getValue(), secretKeySpec, ivParameterSpec);
-
-    return instance;
+    return decrypt(decryptionDto, key);
   }
 
-  private enum CipherMode {
-    ENCRYPT(Cipher.ENCRYPT_MODE),
-    DECRYPT(Cipher.DECRYPT_MODE);
+  @Override
+  public String decrypt(CryptoDto decryptionDto, String key) {
+    return aesCoder.decrypt(decryptionDto.getValue(), key);
+  }
 
-    @Getter
-    int value;
+  @Override
+  public String encrypt(CryptoDto encryptionDto) {
+    String key = pstorageProperties.getAes().getCommon().getKey();
 
-    CipherMode(int modeValue) {
-      value = modeValue;
-    }
+    return encrypt(encryptionDto, key);
+  }
+
+  @Override
+  public String encrypt(CryptoDto encryptionDto, String key) {
+    return aesCoder.encrypt(encryptionDto.getValue(), key);
   }
 }
