@@ -13,6 +13,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
+import shaart.pstorage.ui.SystemTrayIcon;
 
 /**
  * Abstract class for running Spring Boot App via JavaFX.
@@ -25,6 +26,7 @@ public abstract class AbstractJavaFxApplicationSupport extends Application {
   @Getter
   private Exception contextLoadingException;
 
+  private SystemTrayIcon systemTrayIcon = SystemTrayIcon.INSTANCE;
   private ConfigurableApplicationContext context;
   private Stage splashScreen;
 
@@ -48,6 +50,8 @@ public abstract class AbstractJavaFxApplicationSupport extends Application {
     try {
       context = SpringApplication.run(getClass(), savedArgs);
       context.getAutowireCapableBeanFactory().autowireBean(this);
+
+      systemTrayIcon.initialize();
     } catch (Exception e) {
       log.error(e.getLocalizedMessage(), e);
       contextLoadingException = e;
@@ -59,6 +63,7 @@ public abstract class AbstractJavaFxApplicationSupport extends Application {
 
   @Override
   public void stop() throws Exception {
+    systemTrayIcon.remove();
     log.trace("Stopping the application");
     super.stop();
     if (context != null) {

@@ -13,6 +13,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javax.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import shaart.pstorage.component.UserDataContext;
 import shaart.pstorage.dto.CryptoDto;
 import shaart.pstorage.dto.CryptoResult;
 import shaart.pstorage.dto.PasswordDto;
@@ -39,6 +40,9 @@ public class MainFormController {
 
   @Autowired
   private SecurityAwareService securityAwareService;
+
+  @Autowired
+  private UserDataContext userDataContext;
 
   // JavaFX Injections
   @FXML
@@ -81,7 +85,7 @@ public class MainFormController {
   }
 
   void fillWithData() {
-    List<PasswordDto> passwords = passwordService.findAll();
+    List<PasswordDto> passwords = passwordService.findAll(() -> securityAwareService.currentUser());
     data = FXCollections.observableArrayList(passwords);
     table.setItems(data);
   }
@@ -100,9 +104,14 @@ public class MainFormController {
       return;
     }
 
-    final CryptoDto encryptionDto = CryptoDto.of(txtEncryptedValue.getText());
     final String userMasterPassword = userDto.get().getMasterPassword();
-    final CryptoResult encrypted = encryptionService.encrypt(encryptionDto, userMasterPassword);
+    final CryptoDto passwordParam = CryptoDto.of(userMasterPassword);
+    final String decryptedMasterPassword = encryptionService.decrypt(passwordParam)
+        .getValue();
+
+    final CryptoDto encryptionDto = CryptoDto.of(txtEncryptedValue.getText());
+    final CryptoResult encrypted =
+        encryptionService.encrypt(encryptionDto, decryptedMasterPassword);
 
     PasswordDto password = PasswordDto.builder()
         .alias(txtAlias.getText())
@@ -117,6 +126,7 @@ public class MainFormController {
     final PasswordDto savedPassword = passwordService.save(password);
 
     data.add(savedPassword);
+    userDataContext.addPassword(txtAlias.getText(), txtEncryptedValue.getText());
 
     clearFields();
   }

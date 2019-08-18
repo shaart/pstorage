@@ -34,6 +34,7 @@ public class PStorageApplication extends AbstractJavaFxApplicationSupport {
   private ExceptionUtil exceptionUtil = ExceptionUtil.getInstance();
 
   public static void main(String[] args) {
+    log.info("Launching app...");
     launchApp(args);
   }
 

@@ -2,6 +2,7 @@ package shaart.pstorage.service;
 
 import shaart.pstorage.dto.CryptoDto;
 import shaart.pstorage.dto.CryptoResult;
+import shaart.pstorage.enumeration.EncryptionType;
 
 /**
  * An encryption service for encrypt-decrypt operations.
@@ -41,4 +42,5 @@ public interface EncryptionService {
    */
   CryptoResult decrypt(CryptoDto value, String key);
 
+  CryptoResult decrypt(EncryptionType encryptionType, CryptoDto cryptoDto, String key);
 }

@@ -2,6 +2,7 @@ package shaart.pstorage.service.impl;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -14,7 +15,6 @@ import shaart.pstorage.enumeration.RoleType;
 import shaart.pstorage.exception.UnauthorizedException;
 import shaart.pstorage.repository.PasswordRepository;
 import shaart.pstorage.service.PasswordService;
-import shaart.pstorage.service.SecurityAwareService;
 
 @Service
 @Transactional
@@ -23,11 +23,10 @@ public class PasswordServiceImpl implements PasswordService {
 
   private final PasswordRepository repository;
   private final PasswordConverter passwordConverter;
-  private final SecurityAwareService securityAwareService;
 
   @Override
-  public List<PasswordDto> findAll() {
-    final Optional<UserDto> contextUser = securityAwareService.currentUser();
+  public List<PasswordDto> findAll(Supplier<Optional<UserDto>> currentUserSupplier) {
+    final Optional<UserDto> contextUser = currentUserSupplier.get();
     if (!contextUser.isPresent()) {
       throw new UnauthorizedException("Can't load user's passwords because not authorized");
     }
@@ -42,8 +41,8 @@ public class PasswordServiceImpl implements PasswordService {
   }
 
   @Override
-  public List<PasswordDto> findAllByUser(String username) {
-    return repository.findAllByUserName(username).stream()
+  public List<PasswordDto> findAllByUser(String userName) {
+    return repository.findAllByUserName(userName).stream()
         .map(passwordConverter::toDto)
         .collect(Collectors.toList());
   }
@@ -52,6 +51,15 @@ public class PasswordServiceImpl implements PasswordService {
   public PasswordDto save(PasswordDto passwordDto) {
     Password password = passwordConverter.toEntity(passwordDto);
     final Password savedPassword = repository.save(password);
+
     return passwordConverter.toDto(savedPassword);
+  }
+
+  @Override
+  public List<PasswordDto> findFavoritesByUser(String userName) {
+    //TODO 19.08.2019 00:41 add table for user-favorite-passwords and change logic here
+    return repository.findAllByUserName(userName).stream()
+        .map(passwordConverter::toDto)
+        .collect(Collectors.toList());
   }
 }
