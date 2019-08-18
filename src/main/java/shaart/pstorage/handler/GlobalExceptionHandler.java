@@ -20,6 +20,13 @@ public enum GlobalExceptionHandler {
 
   private ExceptionUtil exceptionUtil = ExceptionUtil.getInstance();
 
+  /**
+   * <p>Handles an exception that was not handled by any try-catch construction.</p>
+   * <p>Writes a message into log and then shows new window with error to user.</p>
+   *
+   * @param thread thread where an exception occurred
+   * @param exception an exception that was unhandled before
+   */
   public void handle(Thread thread, Throwable exception) {
     log.error(String.format("Uncaught exception at thread '%s': %s",
         thread.getName(),

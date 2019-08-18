@@ -8,4 +8,8 @@ class PStorageException extends RuntimeException {
   PStorageException(String message) {
     super(message);
   }
+
+  PStorageException(Exception e) {
+    super(e);
+  }
 }

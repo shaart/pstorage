@@ -1,0 +1,34 @@
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+  <changeSet id="201908181509-add-column-encrypt-type-to-password" author="imshaart@gmail.com">
+    <preConditions onFail="MARK_RAN">
+      <tableExists schemaName="public" tableName="password"/>
+      <not>
+        <columnExists tableName="password" columnName="encrypt_type"/>
+      </not>
+    </preConditions>
+    <addColumn schemaName="public" tableName="password">
+      <column name="encrypt_type" type="varchar(20)" defaultValue="AES_CODER">
+        <constraints nullable="false"/>
+      </column>
+    </addColumn>
+  </changeSet>
+
+  <changeSet id="201908181642-add-column-encrypt-type-to-user" author="imshaart@gmail.com">
+    <preConditions onFail="MARK_RAN">
+      <tableExists schemaName="public" tableName="user"/>
+      <not>
+        <columnExists tableName="user" columnName="encrypt_type"/>
+      </not>
+    </preConditions>
+    <addColumn schemaName="public" tableName="user">
+      <column name="encrypt_type" type="varchar(20)" defaultValue="AES_CODER">
+        <constraints nullable="false"/>
+      </column>
+    </addColumn>
+  </changeSet>
+</databaseChangeLog>

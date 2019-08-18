@@ -1,6 +1,7 @@
 package shaart.pstorage.ui;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
@@ -18,9 +19,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import shaart.pstorage.config.PStorageProperties;
+import shaart.pstorage.dto.CryptoDto;
+import shaart.pstorage.dto.CryptoResult;
 import shaart.pstorage.dto.UserDto;
 import shaart.pstorage.dto.ViewHolder;
 import shaart.pstorage.service.EncryptionService;
+import shaart.pstorage.service.SecurityAwareService;
 import shaart.pstorage.service.UserService;
 import shaart.pstorage.ui.util.AlertHelper;
 
@@ -38,7 +42,7 @@ public class LoginFormController {
 
   @Autowired
   @Qualifier("mainView")
-  private ViewHolder mainViewHolder;
+  private ViewHolder<MainFormController> mainViewHolder;
 
   @Autowired
   private UserService userService;
@@ -47,7 +51,10 @@ public class LoginFormController {
   private EncryptionService encryptionService;
 
   @Autowired
-  private PStorageProperties pStorageProperties;
+  private SecurityAwareService securityAwareService;
+
+  @Autowired
+  private PStorageProperties pstorageProperties;
 
   // JavaFX Injections
   @FXML
@@ -82,12 +89,22 @@ public class LoginFormController {
       return;
     }
 
-    String encrypted = encryptionService.encrypt(passwordField.getText());
-    userService.isCorrectPasswordFor(nameField.getText(), encrypted);
+    final CryptoDto passwordParam = CryptoDto.of(passwordField.getText());
+    final CryptoResult encryptResult = encryptionService.encrypt(passwordParam);
+    final String encrypted = encryptResult.getValue();
+
+    boolean isCorrectCredentials = userService.isCorrectPasswordFor(nameField.getText(), encrypted);
+    if (!isCorrectCredentials) {
+      showValidationAlert(owner, Collections.singletonList("Incorrect username or password"));
+      return;
+    }
+
+    logUserIn();
 
     showMainForm();
     closeLoginForm(event);
   }
+
 
   @FXML
   protected void register(ActionEvent event) {
@@ -98,20 +115,39 @@ public class LoginFormController {
       return;
     }
 
-    String encrypted = encryptionService.encrypt(passwordField.getText());
+    final String username = nameField.getText();
+    if (userService.exists(username)) {
+      AlertHelper.showAlert(AlertType.ERROR, "Registration error",
+          "User with that username already exists!");
+      return;
+    }
+
+    final CryptoDto passwordParam = CryptoDto.of(passwordField.getText());
+    final CryptoResult encryptResult = encryptionService.encrypt(passwordParam);
 
     UserDto user = UserDto.builder()
-        .name(nameField.getText())
-        .masterPassword(encrypted)
+        .name(username)
+        .masterPassword(encryptResult.getValue())
+        .encryptionType(encryptResult.getEncryptionType())
         .build();
     UserDto saved = userService.save(user);
 
     log.trace("User '{}' saved successfully", saved.getName());
+
+    AlertHelper.showAlert(AlertType.INFORMATION, "Registration",
+        String.format("Registration for user with name '%s' is successful!", username));
   }
 
   private void closeLoginForm(Event event) {
     Stage window = (Stage) ((Node) event.getSource()).getScene().getWindow();
     window.close();
+  }
+
+  private void logUserIn() {
+    String username = nameField.getText();
+    String password = passwordField.getText();
+
+    securityAwareService.authorize(username, password);
   }
 
   private boolean showErrorIfHasInvalidField(Window owner) {
@@ -128,11 +164,12 @@ public class LoginFormController {
   private void showMainForm() {
     Stage stage = new Stage();
 
-    String title = pStorageProperties.getUi().getTitle();
+    String title = pstorageProperties.getUi().getTitle();
     stage.setTitle(title);
 
     Parent mainFormView = mainViewHolder.getView();
     stage.setScene(new Scene(mainFormView));
+    mainViewHolder.getController().fillWithData();
 
     stage.setResizable(true);
     stage.centerOnScreen();
@@ -152,7 +189,7 @@ public class LoginFormController {
     if (username.isEmpty()) {
       errors.add(String.format(CANNOT_BE_EMPTY, USERNAME));
     } else {
-      Integer maxLength = pStorageProperties.getValidation().getUsername().getLength().getMax();
+      Integer maxLength = pstorageProperties.getValidation().getUsername().getLength().getMax();
       if (username.length() > maxLength) {
         errors.add(String.format(LESS_THAN_MAX_SYMBOLS, USERNAME, maxLength));
       }
@@ -162,11 +199,11 @@ public class LoginFormController {
     if (password.isEmpty()) {
       errors.add(String.format(CANNOT_BE_EMPTY, PASS));
     } else {
-      Integer minLength = pStorageProperties.getValidation().getPassword().getLength().getMin();
+      Integer minLength = pstorageProperties.getValidation().getPassword().getLength().getMin();
       if (password.length() < minLength) {
         errors.add(String.format(MORE_THAN_MIN_SYMBOLS, PASS, minLength));
       } else {
-        Integer maxLength = pStorageProperties.getValidation().getPassword().getLength().getMax();
+        Integer maxLength = pstorageProperties.getValidation().getPassword().getLength().getMax();
         if (password.length() > maxLength) {
           errors.add(String.format(LESS_THAN_MAX_SYMBOLS, PASS, maxLength));
         }

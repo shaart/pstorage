@@ -10,6 +10,12 @@ import shaart.pstorage.util.OperationUtil;
 @Configuration
 public class BeanConfig {
 
+  /**
+   * Bean that runs liquibase scripts.
+   *
+   * @param dataSource a datasource bean
+   * @return liquibase bean
+   */
   @Bean
   public SpringLiquibase liquibase(DataSource dataSource) {
     SpringLiquibase liquibase = new SpringLiquibase();

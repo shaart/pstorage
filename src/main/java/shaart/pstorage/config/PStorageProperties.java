@@ -12,6 +12,7 @@ public class PStorageProperties {
 
   private Validation validation;
   private Ui ui;
+  private Aes aes;
 
   @Getter
   @Setter
@@ -54,6 +55,21 @@ public class PStorageProperties {
 
       private Integer max;
 
+    }
+  }
+
+  @Getter
+  @Setter
+  public static class Aes {
+
+    Common common;
+
+    @Getter
+    @Setter
+    public static class Common {
+
+      private String key;
+      private String vector;
     }
   }
 }
