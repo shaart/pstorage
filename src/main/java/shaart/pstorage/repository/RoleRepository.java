@@ -5,14 +5,14 @@ import java.util.Optional;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import shaart.pstorage.entity.User;
+import shaart.pstorage.entity.Role;
 
 @Transactional(propagation = Propagation.MANDATORY)
-public interface UserRepository extends CrudRepository<User, Integer> {
+public interface RoleRepository extends CrudRepository<Role, Integer> {
 
-  List<User> findAll();
+  List<Role> findAll();
 
-  Optional<User> findByName(String name);
+  Optional<Role> findByName(String name);
 
   boolean existsByName(String name);
 }

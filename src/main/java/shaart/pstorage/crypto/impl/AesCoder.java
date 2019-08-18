@@ -1,4 +1,4 @@
-package shaart.pstorage.crypto;
+package shaart.pstorage.crypto.impl;
 
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
@@ -21,11 +21,13 @@ import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import shaart.pstorage.crypto.Coder;
+import shaart.pstorage.enumeration.EncryptionType;
 import shaart.pstorage.exception.CryptoException;
 
 @Slf4j
 @Component
-public class AesCoder {
+public class AesCoder implements Coder {
 
   private static final String PKBDF2_ALGO = "PBKDF2WithHmacSHA256";
   private static final String CYPHER_ALGORITHM = "AES/CBC/PKCS5PADDING";
@@ -38,7 +40,8 @@ public class AesCoder {
   private SecretKeyFactory factory;
 
   @PostConstruct
-  public void initializeCipher() {
+  @Override
+  public void initialize() {
     try {
       cipher = Cipher.getInstance(CYPHER_ALGORITHM);
       factory = SecretKeyFactory.getInstance(PKBDF2_ALGO);
@@ -47,6 +50,7 @@ public class AesCoder {
     }
   }
 
+  @Override
   public String decrypt(String toBeDecrypted, String key) {
     final byte[] secureIV = generateSecureIV(key);
 
@@ -86,6 +90,7 @@ public class AesCoder {
    * @param key encryption key
    * @return encrypted value
    */
+  @Override
   public String encrypt(String toBeEncrypted, String key) {
     final byte[] salt = generateSalt(key);
 
@@ -93,6 +98,11 @@ public class AesCoder {
     final byte[] encodedIV = generateSecureIV(key);
 
     return encrypt(secretKey, encodedIV, toBeEncrypted);
+  }
+
+  @Override
+  public EncryptionType getEncryptionType() {
+    return EncryptionType.AES_CODER;
   }
 
   /**

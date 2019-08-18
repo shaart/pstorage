@@ -21,14 +21,15 @@ public class PasswordConverterImpl implements PasswordConverter {
 
   @Override
   public Password toEntity(PasswordDto passwordDto) {
-    final Integer id = operationUtil.asInteger(passwordDto.getId());
-    final Timestamp createdAt = operationUtil.asTimestamp(passwordDto.getCreatedAt());
+    final Integer id = operationUtil.asIntegerOrNull(passwordDto.getId());
+    final Timestamp createdAt = operationUtil.asTimestampOrNull(passwordDto.getCreatedAt());
     final User user = userConverter.toEntity(passwordDto.getUser());
 
     return Password.builder()
         .id(id)
         .user(user)
         .alias(passwordDto.getAlias())
+        .encryptionType(passwordDto.getEncryptionType())
         .value(passwordDto.getEncryptedValue())
         .createdAt(createdAt)
         .build();
@@ -36,14 +37,15 @@ public class PasswordConverterImpl implements PasswordConverter {
 
   @Override
   public PasswordDto toDto(Password passwordEntity) {
-    final String id = operationUtil.asString(passwordEntity.getId());
-    final LocalDateTime createdAt = operationUtil.asDateTime(passwordEntity.getCreatedAt());
+    final String id = operationUtil.asStringOrEmpty(passwordEntity.getId());
+    final LocalDateTime createdAt = operationUtil.asDteTimeOrNull(passwordEntity.getCreatedAt());
     final UserDto userDto = userConverter.toDto(passwordEntity.getUser());
 
     return PasswordDto.builder()
         .id(id)
         .user(userDto)
         .alias(passwordEntity.getAlias())
+        .encryptionType(passwordEntity.getEncryptionType())
         .encryptedValue(passwordEntity.getValue())
         .createdAt(createdAt)
         .build();

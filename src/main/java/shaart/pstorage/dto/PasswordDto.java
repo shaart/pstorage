@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import shaart.pstorage.enumeration.EncryptionType;
 
 @Getter
 @Setter
@@ -21,6 +22,8 @@ public class PasswordDto {
   private UserDto user;
 
   private String alias;
+
+  private EncryptionType encryptionType;
 
   @ToString.Exclude
   private String encryptedValue;

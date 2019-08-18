@@ -1,6 +1,7 @@
 package shaart.pstorage.service;
 
 import shaart.pstorage.dto.CryptoDto;
+import shaart.pstorage.dto.CryptoResult;
 
 /**
  * An encryption service for encrypt-decrypt operations.
@@ -13,7 +14,7 @@ public interface EncryptionService {
    * @param encryptionDto a value to be encrypted
    * @return encrypted value
    */
-  String encrypt(CryptoDto encryptionDto);
+  CryptoResult encrypt(CryptoDto encryptionDto);
 
   /**
    * Encrypts a value using key.
@@ -22,7 +23,7 @@ public interface EncryptionService {
    * @param key an encryption key
    * @return encrypted value
    */
-  String encrypt(CryptoDto encryptionDto, String key);
+  CryptoResult encrypt(CryptoDto encryptionDto, String key);
 
   /**
    * Decrypts a value using default key.
@@ -30,7 +31,7 @@ public interface EncryptionService {
    * @param value a value to be decrypted
    * @return decrypted value
    */
-  String decrypt(CryptoDto value);
+  CryptoResult decrypt(CryptoDto value);
 
   /**
    * Decrypts a value using key.
@@ -38,6 +39,6 @@ public interface EncryptionService {
    * @param value a value to be decrypted
    * @return decrypted value
    */
-  String decrypt(CryptoDto value, String key);
+  CryptoResult decrypt(CryptoDto value, String key);
 
 }

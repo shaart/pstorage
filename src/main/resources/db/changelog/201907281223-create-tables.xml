@@ -5,7 +5,7 @@
          http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
   <changeSet id="201907281223-create-table-user" author="imshaart@gmail.com">
-    <preConditions>
+    <preConditions onFail="MARK_RAN">
       <not>
         <tableExists schemaName="public" tableName="user"/>
       </not>
@@ -26,7 +26,7 @@
   </changeSet>
 
   <changeSet id="201907281224-create-table-password" author="imshaart@gmail.com">
-    <preConditions>
+    <preConditions onFail="MARK_RAN">
       <not>
         <tableExists schemaName="public" tableName="password"/>
       </not>

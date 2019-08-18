@@ -61,7 +61,9 @@ public abstract class AbstractJavaFxApplicationSupport extends Application {
   public void stop() throws Exception {
     log.trace("Stopping the application");
     super.stop();
-    context.close();
+    if (context != null) {
+      context.close();
+    }
   }
 
   private void showSplash() {

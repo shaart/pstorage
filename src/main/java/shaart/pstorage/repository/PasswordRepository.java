@@ -11,4 +11,5 @@ public interface PasswordRepository extends CrudRepository<Password, Integer> {
 
   List<Password> findAll();
 
+  List<Password> findAllByUserName(String name);
 }

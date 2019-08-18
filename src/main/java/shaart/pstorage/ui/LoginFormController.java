@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import shaart.pstorage.config.PStorageProperties;
 import shaart.pstorage.dto.CryptoDto;
+import shaart.pstorage.dto.CryptoResult;
 import shaart.pstorage.dto.UserDto;
 import shaart.pstorage.dto.ViewHolder;
 import shaart.pstorage.service.EncryptionService;
@@ -41,7 +42,7 @@ public class LoginFormController {
 
   @Autowired
   @Qualifier("mainView")
-  private ViewHolder mainViewHolder;
+  private ViewHolder<MainFormController> mainViewHolder;
 
   @Autowired
   private UserService userService;
@@ -88,7 +89,10 @@ public class LoginFormController {
       return;
     }
 
-    String encrypted = encryptionService.encrypt(CryptoDto.of(passwordField.getText()));
+    final CryptoDto passwordParam = CryptoDto.of(passwordField.getText());
+    final CryptoResult encryptResult = encryptionService.encrypt(passwordParam);
+    final String encrypted = encryptResult.getValue();
+
     boolean isCorrectCredentials = userService.isCorrectPasswordFor(nameField.getText(), encrypted);
     if (!isCorrectCredentials) {
       showValidationAlert(owner, Collections.singletonList("Incorrect username or password"));
@@ -111,15 +115,27 @@ public class LoginFormController {
       return;
     }
 
-    String encrypted = encryptionService.encrypt(CryptoDto.of(passwordField.getText()));
+    final String username = nameField.getText();
+    if (userService.exists(username)) {
+      AlertHelper.showAlert(AlertType.ERROR, "Registration error",
+          "User with that username already exists!");
+      return;
+    }
+
+    final CryptoDto passwordParam = CryptoDto.of(passwordField.getText());
+    final CryptoResult encryptResult = encryptionService.encrypt(passwordParam);
 
     UserDto user = UserDto.builder()
-        .name(nameField.getText())
-        .masterPassword(encrypted)
+        .name(username)
+        .masterPassword(encryptResult.getValue())
+        .encryptionType(encryptResult.getEncryptionType())
         .build();
     UserDto saved = userService.save(user);
 
     log.trace("User '{}' saved successfully", saved.getName());
+
+    AlertHelper.showAlert(AlertType.INFORMATION, "Registration",
+        String.format("Registration for user with name '%s' is successful!", username));
   }
 
   private void closeLoginForm(Event event) {
@@ -153,6 +169,7 @@ public class LoginFormController {
 
     Parent mainFormView = mainViewHolder.getView();
     stage.setScene(new Scene(mainFormView));
+    mainViewHolder.getController().fillWithData();
 
     stage.setResizable(true);
     stage.centerOnScreen();

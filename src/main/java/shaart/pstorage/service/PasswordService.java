@@ -7,6 +7,8 @@ public interface PasswordService {
 
   List<PasswordDto> findAll();
 
+  List<PasswordDto> findAllByUser(String username);
+
   PasswordDto save(PasswordDto password);
 
 }

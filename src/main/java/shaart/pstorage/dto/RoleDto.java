@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import shaart.pstorage.enumeration.EncryptionType;
 
 @Getter
 @Setter
@@ -15,18 +14,11 @@ import shaart.pstorage.enumeration.EncryptionType;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserDto {
+public class RoleDto {
 
   private String id;
 
   private String name;
-
-  @ToString.Exclude
-  private String masterPassword;
-
-  private EncryptionType encryptionType;
-
-  private RoleDto role;
 
   private LocalDateTime createdAt;
 }

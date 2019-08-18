@@ -1,5 +1,7 @@
 package shaart.pstorage.service.impl;
 
+import static java.util.Objects.isNull;
+
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -12,6 +14,7 @@ import shaart.pstorage.dto.UserDto;
 import shaart.pstorage.entity.User;
 import shaart.pstorage.exception.UserNotFoundException;
 import shaart.pstorage.repository.UserRepository;
+import shaart.pstorage.service.RoleService;
 import shaart.pstorage.service.UserService;
 
 @Service
@@ -21,6 +24,7 @@ public class UserServiceImpl implements UserService {
 
   private final UserRepository repository;
   private final UserConverter userConverter;
+  private final RoleService roleService;
 
   @Override
   public void delete(UserDto userDto) {
@@ -37,13 +41,8 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public Optional<UserDto> findByName(String username) {
-    Optional<User> user = repository.findByName(username);
-    if (!user.isPresent()) {
-      return Optional.empty();
-    }
-
-    User foundUser = user.get();
-    return Optional.ofNullable(userConverter.toDto(foundUser));
+    return repository.findByName(username)
+        .map(userConverter::toDto);
   }
 
   @Override
@@ -59,8 +58,16 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public UserDto save(UserDto userDto) {
+    if (isNull(userDto.getRole())) {
+      userDto.setRole(roleService.findUserDefault());
+    }
     User user = userConverter.toEntity(userDto);
     final User savedUser = repository.save(user);
     return userConverter.toDto(savedUser);
+  }
+
+  @Override
+  public boolean exists(String username) {
+    return repository.existsByName(username);
   }
 }

@@ -1,20 +1,17 @@
 package shaart.pstorage.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import shaart.pstorage.enumeration.EncryptionType;
 
-/**
- * DTO for encryption/decryption operations argument.
- */
 @Getter
 @Setter
+@Builder
 @AllArgsConstructor
-public class CryptoDto {
+public class CryptoResult {
 
   private String value;
-
-  public static CryptoDto of(String value) {
-    return new CryptoDto(value);
-  }
+  private EncryptionType encryptionType;
 }

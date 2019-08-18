@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -16,6 +18,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import shaart.pstorage.enumeration.EncryptionType;
 
 @Table(schema = "public", name = "password")
 @Entity
@@ -38,6 +41,10 @@ public class Password implements Serializable {
 
   @Column(name = "alias", nullable = false, unique = true)
   private String alias;
+
+  @Enumerated(EnumType.STRING)
+  @Column(name = "encrypt_type", nullable = false, length = 20)
+  private EncryptionType encryptionType;
 
   @Column(name = "value", nullable = false, unique = true)
   private String value;
