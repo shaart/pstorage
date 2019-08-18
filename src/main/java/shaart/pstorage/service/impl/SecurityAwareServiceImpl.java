@@ -7,7 +7,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import shaart.pstorage.component.UserDataContext;
 import shaart.pstorage.dto.UserDto;
+import shaart.pstorage.exception.UnauthorizedException;
 import shaart.pstorage.service.SecurityAwareService;
 import shaart.pstorage.service.UserService;
 
@@ -16,6 +18,7 @@ import shaart.pstorage.service.UserService;
 public class SecurityAwareServiceImpl implements SecurityAwareService {
 
   private final UserService userService;
+  private final UserDataContext userDataContext;
 
   @Override
   public void authorize(String username, String password) {
@@ -24,6 +27,11 @@ public class SecurityAwareServiceImpl implements SecurityAwareService {
 
     SecurityContext securityContext = SecurityContextHolder.getContext();
     securityContext.setAuthentication(authToken);
+
+    final UserDto currentUser = currentUser()
+        .orElseThrow(
+            () -> new UnauthorizedException("Can't load user data because current user not found"));
+    userDataContext.loadUserData(currentUser);
   }
 
   @Override
