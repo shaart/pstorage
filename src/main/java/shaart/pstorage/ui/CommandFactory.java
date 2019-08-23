@@ -13,6 +13,11 @@ import lombok.extern.slf4j.Slf4j;
 public enum CommandFactory {
   INSTANCE;
 
+  /**
+   * Creates new "Exit from the Application" command.
+   *
+   * @return action listener that shutdowns the application
+   */
   public ActionListener createExitCommand() {
     return actionEvent -> {
       if (log.isInfoEnabled()) {
@@ -28,6 +33,12 @@ public enum CommandFactory {
     return createCopyPasswordCommand(decryptFunction.apply(encryptedPassword));
   }
 
+  /**
+   * Creates new "Copy Value (Password) to Clipboard" command.
+   *
+   * @param copyValue Value to be copied
+   * @return action listener that copies received value to clipboard on call
+   */
   public ActionListener createCopyPasswordCommand(final String copyValue) {
     return actionEvent -> {
       final Clipboard systemClipboard = Toolkit.getDefaultToolkit().getSystemClipboard();

@@ -1,0 +1,43 @@
+pstorage:
+  ui: # UI Parameters
+    title: PStorage - Password Storage
+  # Validation
+  validation:
+    password:
+      length:
+        min: 3
+        max: 255
+    username:
+      length:
+        max: 255
+  # Encrypt
+  aes:
+    common:
+      vector: 'encRyb7!n1tVe70r'
+      key: '@S7r0ng$ecre7Key'
+# Database
+hibernate:
+  dialect: 'org.hibernate.dialect.H2Dialect'
+# Spring
+spring:
+  jmx:
+    enabled: false # Make run faster disabling JMX
+  datasource:
+    url: 'jdbc:h2:~/pstorage/data;DB_CLOSE_ON_EXIT=FALSE'
+    username: 'padmin'
+    password: 'p$t0RAAAGE'
+    tomcat:
+      test-on-borrow: true
+      validation-query: 'SELECT 1'
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: validate
+  h2:
+    console:
+      enabled: true
+      path: '/h2-console'
+  # Liquibase
+  liquibase:
+    enabled: true
+    change-log: 'classpath:db/liquibase-changelog.xml'

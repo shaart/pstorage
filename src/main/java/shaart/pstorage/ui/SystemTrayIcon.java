@@ -28,6 +28,9 @@ public enum SystemTrayIcon {
   private TrayIcon trayIcon;
   private SystemTray systemTray;
 
+  /**
+   * Initializes an application's icon on the System Tray.
+   */
   public void initialize() {
     try {
       initTrayMenu();
@@ -85,6 +88,9 @@ public enum SystemTrayIcon {
     return popup;
   }
 
+  /**
+   * Removes an application's icon from the system tray if exists.
+   */
   public void remove() {
     if (isNull(systemTray) || isNull(trayIcon)) {
       log.info("System Tray or Tray Icon is not initialized, nothing to remove.");
