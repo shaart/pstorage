@@ -11,7 +11,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 public abstract class SpringAbstractTest {
 
   @BeforeClass
-  public static void bootstrapJavaFx(){
+  public static void bootstrapJavaFx() {
     new JFXPanel();
   }
 }

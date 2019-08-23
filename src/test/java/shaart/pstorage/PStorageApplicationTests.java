@@ -8,7 +8,7 @@ import org.springframework.util.Assert;
 public class PStorageApplicationTests extends SpringAbstractTest {
 
   @BeforeClass
-  public static void bootstrapJavaFx(){
+  public static void bootstrapJavaFx() {
     new JFXPanel();
   }
 
