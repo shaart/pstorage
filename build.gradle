@@ -4,10 +4,22 @@ plugins {
 }
 
 apply plugin: 'io.spring.dependency-management'
+apply plugin: 'checkstyle'
 
 group = 'shaart'
 version = '0.0.1'
 sourceCompatibility = '1.8'
+
+checkstyle {
+    toolVersion '8.23'
+    configFile file("config/checkstyle/checkstyle.xml")
+}
+checkstyleMain {
+    source ='src/main/java'
+}
+checkstyleTest {
+    source ='src/test/java'
+}
 
 configurations {
     compileOnly {
@@ -36,4 +48,14 @@ dependencies {
     // Tests
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
+}
+
+tasks.withType(Checkstyle) {
+    maxWarnings 0
+    maxErrors 0
+    reports {
+        xml.enabled false
+        html.enabled true
+        html.stylesheet resources.text.fromFile('config/xsl/checkstyle-noframes-severity-sorted.xsl')
+    }
 }
