@@ -74,8 +74,8 @@ public class AesCoder implements Coder {
       byte[] decodedValue = Base64.getDecoder().decode(toBeDecrypted.getBytes());
 
       decryptedValue = cipher.doFinal(decodedValue);
-    } catch (InvalidKeyException | InvalidAlgorithmParameterException | IllegalBlockSizeException |
-        BadPaddingException e) {
+    } catch (InvalidKeyException | InvalidAlgorithmParameterException | IllegalBlockSizeException
+        | BadPaddingException e) {
       log.error(e.getLocalizedMessage(), e);
       throw new CryptoException(e);
     }
@@ -83,13 +83,6 @@ public class AesCoder implements Coder {
     return new String(decryptedValue);
   }
 
-  /**
-   * Encrypt value using key.
-   *
-   * @param toBeEncrypted encrypting value
-   * @param key encryption key
-   * @return encrypted value
-   */
   @Override
   public String encrypt(String toBeEncrypted, String key) {
     final byte[] salt = generateSalt(key);
@@ -98,11 +91,6 @@ public class AesCoder implements Coder {
     final byte[] encodedIV = generateSecureIV(key);
 
     return encrypt(secretKey, encodedIV, toBeEncrypted);
-  }
-
-  @Override
-  public EncryptionType getEncryptionType() {
-    return EncryptionType.AES_CODER;
   }
 
   /**
@@ -119,12 +107,17 @@ public class AesCoder implements Coder {
       byte[] cipherText = cipher.doFinal(toBeEncryptedBytes);
 
       encryptedValue = Base64.getEncoder().encode(cipherText);
-    } catch (InvalidKeyException | InvalidAlgorithmParameterException | IllegalBlockSizeException |
-        BadPaddingException e) {
+    } catch (InvalidKeyException | InvalidAlgorithmParameterException | IllegalBlockSizeException
+        | BadPaddingException e) {
       log.error(e.getLocalizedMessage(), e);
       throw new CryptoException(e);
     }
     return new String(encryptedValue);
+  }
+
+  @Override
+  public EncryptionType getEncryptionType() {
+    return EncryptionType.AES_CODER;
   }
 
   /**
@@ -155,7 +148,7 @@ public class AesCoder implements Coder {
   }
 
   /**
-   * Generates secureIV using masterPassword
+   * Generates secureIV using masterPassword.
    *
    * @param masterPassword main password (key)
    * @return a secure IV array
