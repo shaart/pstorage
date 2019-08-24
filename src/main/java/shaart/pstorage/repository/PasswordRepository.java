@@ -7,8 +7,9 @@ import org.springframework.transaction.annotation.Transactional;
 import shaart.pstorage.entity.Password;
 
 @Transactional(propagation = Propagation.MANDATORY)
-public interface PasswordRepository extends CrudRepository<Password, Long> {
+public interface PasswordRepository extends CrudRepository<Password, Integer> {
 
   List<Password> findAll();
 
+  List<Password> findAllByUserName(String name);
 }

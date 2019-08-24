@@ -1,0 +1,28 @@
+== HIGH PRIORITY
+[ ] Windows system tray menu with all passwords copy-password-to-buffer action
+[ ] Asking master-password each N minutes for actions
+[ ] Remember password (emailing or with tooltip on answer secret question)
+[ ] Remove password
+[ ] Application options
+[ ] Configuring passwords to show in the tray menu
+[ ]
+[ ]
+[ ]
+== NORMAL PRIORITY
+[ ] Integrate spring security
+[ ] Change password (should reencrypt all user's passwords in one transaction)
+[ ] Edit existing password with alias
+[ ] Edit alias for existing password
+[ ] Change alias' unique requirement: unique for each user, not for all
+[ ] Saving timestamp by default
+[ ] Admin view with users edition (view, delete)
+[ ]
+[ ]
+[ ]
+[ ]
+== LOW PRIORITY
+[ ] Privileges to roles
+[ ] "About" window
+[ ]
+[ ]
+[ ]

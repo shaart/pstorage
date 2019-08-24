@@ -9,9 +9,11 @@ import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
+import shaart.pstorage.ui.SystemTrayIcon;
 
 /**
  * Abstract class for running Spring Boot App via JavaFX.
@@ -21,6 +23,10 @@ public abstract class AbstractJavaFxApplicationSupport extends Application {
 
   private static String[] savedArgs;
 
+  @Getter
+  private Exception contextLoadingException;
+
+  private SystemTrayIcon systemTrayIcon = SystemTrayIcon.INSTANCE;
   private ConfigurableApplicationContext context;
   private Stage splashScreen;
 
@@ -44,24 +50,25 @@ public abstract class AbstractJavaFxApplicationSupport extends Application {
     try {
       context = SpringApplication.run(getClass(), savedArgs);
       context.getAutowireCapableBeanFactory().autowireBean(this);
+
+      systemTrayIcon.initialize();
     } catch (Exception e) {
       log.error(e.getLocalizedMessage(), e);
-      Platform.runLater(this::errorWindow);
+      contextLoadingException = e;
+    } finally {
+      log.trace("Destroying splash screen");
+      Platform.runLater(this::closeSplash);
     }
-
-    log.trace("Destroying splash screen");
-    Platform.runLater(this::closeSplash);
-  }
-
-  private void errorWindow() {
-    log.warn("Error window is not implemented");
   }
 
   @Override
   public void stop() throws Exception {
+    systemTrayIcon.remove();
     log.trace("Stopping the application");
     super.stop();
-    context.close();
+    if (context != null) {
+      context.close();
+    }
   }
 
   private void showSplash() {

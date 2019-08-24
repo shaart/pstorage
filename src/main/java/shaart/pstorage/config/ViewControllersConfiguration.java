@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import shaart.pstorage.dto.ViewHolder;
 import shaart.pstorage.loader.ViewLoader;
 import shaart.pstorage.loader.impl.ViewLoaderImpl;
+import shaart.pstorage.ui.LoginFormController;
 import shaart.pstorage.ui.MainFormController;
 
 @Configuration
@@ -17,8 +18,13 @@ public class ViewControllersConfiguration {
   }
 
   @Bean
-  public ViewHolder mainView() throws IOException {
+  public ViewHolder<MainFormController> mainView() throws IOException {
     return viewLoader().loadView("view/fxml/mainForm.fxml");
+  }
+
+  @Bean
+  public ViewHolder<LoginFormController> loginView() throws IOException {
+    return viewLoader().loadView("view/fxml/loginForm.fxml");
   }
 
   /**
@@ -26,6 +32,11 @@ public class ViewControllersConfiguration {
    */
   @Bean
   public MainFormController mainFormController() throws IOException {
-    return (MainFormController) mainView().getController();
+    return mainView().getController();
+  }
+
+  @Bean
+  public LoginFormController createUserFormController() throws IOException {
+    return loginView().getController();
   }
 }

@@ -1,0 +1,53 @@
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+  <changeSet id="201907281223-create-table-user" author="imshaart@gmail.com">
+    <preConditions onFail="MARK_RAN">
+      <not>
+        <tableExists schemaName="public" tableName="user"/>
+      </not>
+      <sequenceExists sequenceName="seq_user" schemaName="public"/>
+    </preConditions>
+    <createTable tableName="user">
+      <column name="id" type="integer" defaultValueComputed="nextval('seq_user')">
+        <constraints primaryKey="true" unique="true"/>
+      </column>
+      <column name="name" type="varchar(255)">
+        <constraints nullable="false" unique="true"/>
+      </column>
+      <column name="master_password" type="varchar(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="created_at" type="timestamp" defaultValueComputed="now()"/>
+    </createTable>
+  </changeSet>
+
+  <changeSet id="201907281224-create-table-password" author="imshaart@gmail.com">
+    <preConditions onFail="MARK_RAN">
+      <not>
+        <tableExists schemaName="public" tableName="password"/>
+      </not>
+      <sequenceExists sequenceName="seq_password" schemaName="public"/>
+      <tableExists tableName="user"/>
+      <columnExists tableName="user" columnName="id"/>
+    </preConditions>
+    <createTable tableName="password">
+      <column name="id" type="integer" defaultValueComputed="nextval('seq_password')">
+        <constraints primaryKey="true" unique="true"/>
+      </column>
+      <column name="user_id" type="int">
+        <constraints nullable="false" foreignKeyName="fk_password_user" references="user(id)"/>
+      </column>
+      <column name="alias" type="varchar(255)">
+        <constraints nullable="false" unique="true"/>
+      </column>
+      <column name="value" type="varchar(255)">
+        <constraints nullable="false"/>
+      </column>
+      <column name="created_at" type="timestamp" defaultValueDate="now()"/>
+    </createTable>
+  </changeSet>
+</databaseChangeLog>

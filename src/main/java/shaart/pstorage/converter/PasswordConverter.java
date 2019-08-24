@@ -8,7 +8,7 @@ import shaart.pstorage.entity.Password;
  */
 public interface PasswordConverter {
 
-  Password convert(PasswordDto passwordDto);
+  Password toEntity(PasswordDto passwordDto);
 
-  PasswordDto convert(Password savedPassword);
+  PasswordDto toDto(Password passwordEntity);
 }
