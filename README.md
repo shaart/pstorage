@@ -1,3 +1,9 @@
+## Status
+| Branch | Status |
+| --- | --- |
+| master | [![Build Status](https://shaaart.visualstudio.com/pstorage/_apis/build/status/shaart.pstorage?branchName=master)](https://shaaart.visualstudio.com/pstorage/_build/latest?definitionId=1&branchName=master)
+| dev | [![Build Status](https://shaaart.visualstudio.com/pstorage/_apis/build/status/shaart.pstorage?branchName=dev)](https://shaaart.visualstudio.com/pstorage/_build/latest?definitionId=1&branchName=dev) |
+
 ## About
 Password Storage desktop application.
 
