@@ -51,8 +51,8 @@ public enum SystemTrayIcon {
     }
     systemTray = SystemTray.getSystemTray();
 
-    log.info("Loading application icon");
-    final URL iconUrl = System.class.getResource("/view/image/icon16.png");
+    final URL iconUrl = getClass().getResource("/view/image/icon16.png");
+    log.info("Loading application icon from URL {}", iconUrl);
     Image icon = ImageIO.read(iconUrl);
     trayIcon = new TrayIcon(icon);
 
