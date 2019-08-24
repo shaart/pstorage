@@ -20,12 +20,15 @@ pool:
 steps:
 - task: Gradle@2
   inputs:
-    workingDirectory: ''
     gradleWrapperFile: 'gradlew'
-    gradleOptions: '-Xmx3072m'
+    tasks: 'build'
+    publishJUnitResults: true
+    testResultsFiles: '**/build/reports/test/**'
     javaHomeOption: 'JDKVersion'
     jdkVersionOption: '1.11'
-    jdkArchitectureOption: 'x64'
-    publishJUnitResults: false
-    testResultsFiles: '**/build/reports/test/**'
-    tasks: 'build'
+    gradleOptions: '-Xmx3072m'
+    sqGradlePluginVersionChoice: 'specify'
+    sonarQubeGradlePluginVersion: '2.6.1'
+    sonarQubeRunAnalysis: true
+    codeCoverageToolOption: 'JaCoCo'
+    checkStyleRunAnalysis: true
