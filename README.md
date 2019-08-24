@@ -1,8 +1,8 @@
 ## Status
-| Branch | Status |
-| --- | --- |
-| master | [![Build Status](https://shaaart.visualstudio.com/pstorage/_apis/build/status/shaart.pstorage?branchName=master)](https://shaaart.visualstudio.com/pstorage/_build/latest?definitionId=1&branchName=master)
-| dev | [![Build Status](https://shaaart.visualstudio.com/pstorage/_apis/build/status/shaart.pstorage?branchName=dev)](https://shaaart.visualstudio.com/pstorage/_build/latest?definitionId=1&branchName=dev) |
+| Status | master | dev |
+| --- | --- | --- |
+| Build | [![Build Status](https://shaaart.visualstudio.com/pstorage/_apis/build/status/shaart.pstorage?branchName=master)](https://shaaart.visualstudio.com/pstorage/_build/latest?definitionId=1&branchName=master) | [![Build Status](https://shaaart.visualstudio.com/pstorage/_apis/build/status/shaart.pstorage?branchName=dev)](https://shaaart.visualstudio.com/pstorage/_build/latest?definitionId=1&branchName=dev) |
+| Code quality | [![CodeFactor](https://www.codefactor.io/repository/github/shaart/pstorage/badge/master)](https://www.codefactor.io/repository/github/shaart/pstorage/overview/master) | [![CodeFactor](https://www.codefactor.io/repository/github/shaart/pstorage/badge/dev)](https://www.codefactor.io/repository/github/shaart/pstorage/overview/dev) |
 
 ## About
 Password Storage desktop application.
