@@ -1,17 +1,44 @@
 plugins {
     id 'org.springframework.boot' version '2.1.6.RELEASE'
     id 'java'
-    // UNCOMMENT TO COMPILE FOR JAVA 11
-    // id 'org.openjfx.javafxplugin' version '0.0.8'
+    // OpenJFX should be applied only for Java 11+ version
+    id 'org.openjfx.javafxplugin' version '0.0.8' apply false
 }
+
+def supportedVersions = [
+        JavaVersion.VERSION_1_8,
+        JavaVersion.VERSION_11
+]
+def currentJavaVersion = JavaVersion.current()
+if (!supportedVersions.contains(currentJavaVersion)) {
+    throw new UnsupportedOperationException(
+            "Application not supports Java versions under Java 8 and also Java 10. "
+                    + "Supported versions: "
+                    + supportedVersions.stream()
+                    .map({ version -> version.majorVersion })
+                    .collect())
+}
+
+sourceCompatibility = currentJavaVersion
+def majorVersion = 0
+def minorVersion = 0
+def fixVersion = 2
+def appVersion = "$majorVersion.$minorVersion.$fixVersion"
+version = "j$sourceCompatibility.majorVersion-$appVersion"
 
 apply plugin: 'io.spring.dependency-management'
 apply plugin: 'checkstyle'
-
+apply plugin: 'application'
 group = 'shaart'
-version = '0.0.1'
-sourceCompatibility = JavaVersion.VERSION_1_8
-targetCompatibility = JavaVersion.VERSION_1_8
+mainClassName = 'shaart.pstorage.PStorageApplication'
+
+if (sourceCompatibility >= JavaVersion.VERSION_11) {
+    apply plugin: 'org.openjfx.javafxplugin'
+    javafx {
+        version = "11.0.2"
+        modules = ['javafx.controls', 'javafx.fxml', 'javafx.swing']
+    }
+}
 
 checkstyle {
     toolVersion '8.23'
@@ -23,12 +50,6 @@ checkstyleMain {
 checkstyleTest {
     source ='src/test/java'
 }
-
-// UNCOMMENT TO COMPILE FOR JAVA 11
-//javafx {
-//    version = "11.0.2"
-//    modules = [ 'javafx.controls', 'javafx.fxml', 'javafx.swing' ]
-//}
 
 configurations {
     compileOnly {
@@ -63,8 +84,8 @@ tasks.withType(Checkstyle) {
     maxWarnings 0
     maxErrors 0
     reports {
-        xml.enabled false
-        html.enabled true
+        xml.enabled = false
+        html.enabled = true
         html.stylesheet resources.text.fromFile('config/xsl/checkstyle-noframes-severity-sorted.xsl')
     }
 }
