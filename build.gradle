@@ -1,6 +1,8 @@
 plugins {
     id 'org.springframework.boot' version '2.1.6.RELEASE'
     id 'java'
+    // UNCOMMENT TO COMPILE FOR JAVA 11
+    // id 'org.openjfx.javafxplugin' version '0.0.8'
 }
 
 apply plugin: 'io.spring.dependency-management'
@@ -8,7 +10,8 @@ apply plugin: 'checkstyle'
 
 group = 'shaart'
 version = '0.0.1'
-sourceCompatibility = '1.8'
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
 
 checkstyle {
     toolVersion '8.23'
@@ -20,6 +23,12 @@ checkstyleMain {
 checkstyleTest {
     source ='src/test/java'
 }
+
+// UNCOMMENT TO COMPILE FOR JAVA 11
+//javafx {
+//    version = "11.0.2"
+//    modules = [ 'javafx.controls', 'javafx.fxml', 'javafx.swing' ]
+//}
 
 configurations {
     compileOnly {
