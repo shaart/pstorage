@@ -33,6 +33,13 @@ gradle build
 
 ## Changelog
 #### 2019-08-24
+- Java 11 supporting
+- Build now depends on JAVA_HOME and Java version (8, 11+)
+- Technologies table updated 
+- "How to build" section added
+- System Tray error fixed on startup
+
+#### 2019-08-23
 - Logging configuration added
 - Configuration file migrated from .properties to .yml
 - Checkstyle added and configured to Google Style with HTML report
