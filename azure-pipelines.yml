@@ -18,10 +18,6 @@ pool:
   vmImage: 'ubuntu-latest'
 
 steps:
-- script: |
-    java --version
-  displayName: 'Check Java version'
-  continueOnError: true
 - task: Gradle@2
   inputs:
     workingDirectory: ''
