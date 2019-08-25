@@ -19,14 +19,44 @@ pool:
 
 steps:
 - bash: |
-    export DISPLAY=:99.0
+    apt-get xvfb
+    echo "
+      XVFB=/usr/bin/Xvfb
+      XVFBARGS=\":1 -screen 0 1024x768x24 -ac +extension GLX +render -noreset\"
+      PIDFILE=/var/run/xvfb.pid
+      case \"\$1\" in
+        start)
+          echo -n \"Starting virtual X frame buffer: Xvfb\"
+          start-stop-daemon --start --quiet --pidfile \$PIDFILE --make-pidfile --background --exec \$XVFB -- \$XVFBARGS
+          echo \".\"
+          ;;
+        stop)
+          echo -n \"Stopping virtual X frame buffer: Xvfb\"
+          start-stop-daemon --stop --quiet --pidfile \$PIDFILE
+          echo \".\"
+          ;;
+        restart)
+          \$0 stop
+          \$0 start
+          ;;
+        *)
+              echo \"Usage: /etc/init.d/xvfb {start|stop|restart}\"
+              exit 1
+      esac
+
+      exit 0
+      " > /etc/init.d/xvfb
+    cat /etc/init.d/xvfb
+    chmod +x /etc/init.d/xvfb
+    export DISPLAY=:1
     sh -e /etc/init.d/xvfb start
     sleep 3 # give xvfb some time to start
-  displayName: 'Preparing environment for JavaFX initialization possibility'
+  displayName: 'Installing xvfb for DISPLAY supporting and preparing environment for JavaFX initialization possibility'
+
 - task: Gradle@2
   inputs:
     gradleWrapperFile: 'gradlew'
-    tasks: 'build --stacktrace --info'
+    tasks: 'build --stacktrace --warn'
     publishJUnitResults: true
     testResultsFiles: '**/test/index.html'
     javaHomeOption: 'JDKVersion'
