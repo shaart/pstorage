@@ -18,6 +18,11 @@ pool:
   vmImage: 'ubuntu-latest'
 
 steps:
+- bash: |
+    export DISPLAY=:99.0
+    sh -e /etc/init.d/xvfb start
+    sleep 3 # give xvfb some time to start
+  displayName: 'Preparing environment for JavaFX initialization possibility'
 - task: Gradle@2
   inputs:
     gradleWrapperFile: 'gradlew'
