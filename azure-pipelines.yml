@@ -21,7 +21,7 @@ steps:
 - task: Gradle@2
   inputs:
     gradleWrapperFile: 'gradlew'
-    tasks: 'gradle build -x test --stacktrace --info'
+    tasks: 'build -x test --stacktrace --info'
     publishJUnitResults: true
     testResultsFiles: '**/test/index.html'
     javaHomeOption: 'JDKVersion'
