@@ -29,6 +29,7 @@ import shaart.pstorage.service.EncryptionService;
 import shaart.pstorage.service.PasswordService;
 import shaart.pstorage.service.SecurityAwareService;
 import shaart.pstorage.ui.component.CopyPasswordAction;
+import shaart.pstorage.ui.component.DeletePasswordAction;
 import shaart.pstorage.ui.util.AlertHelper;
 
 /**
@@ -90,10 +91,10 @@ public class MainFormController {
     passwordColumn.setCellValueFactory(new PropertyValueFactory<>("showedEncryptedValue"));
     passwordColumn.setOnEditStart(passwordEditEventHandler());
 
-    TableColumn<PasswordDto, Button> actionsColumn = new TableColumn<>("Actions");
-    actionsColumn.setCellValueFactory(new PropertyValueFactory<>("DUMMY"));
+    TableColumn<PasswordDto, Button> copyToClipboardColumn = new TableColumn<>("Actions");
+    copyToClipboardColumn.setCellValueFactory(new PropertyValueFactory<>("DUMMY"));
 
-    actionsColumn.setCellFactory(CopyPasswordAction.createCallback(
+    copyToClipboardColumn.setCellFactory(CopyPasswordAction.createCallback(
         passwordDto -> {
           Optional<UserDto> userDto = securityAwareService.currentUser();
 
@@ -108,10 +109,21 @@ public class MainFormController {
           return cryptoResult.getValue();
         }));
 
+    TableColumn<PasswordDto, Button> deletePasswordColumn = new TableColumn<>("Actions");
+    deletePasswordColumn.setCellValueFactory(new PropertyValueFactory<>("DUMMY"));
+
+    deletePasswordColumn.setCellFactory(DeletePasswordAction.createCallback(
+        passwordDto -> {
+          passwordService.deleteById(passwordDto.getId());
+          userDataContext.removePassword(passwordDto.getAlias());
+          table.getItems().remove(passwordDto);
+        }));
+
     table.getColumns().add(0, idColumn);
     table.getColumns().add(1, aliasColumn);
     table.getColumns().add(2, passwordColumn);
-    table.getColumns().add(3, actionsColumn);
+    table.getColumns().add(3, copyToClipboardColumn);
+    table.getColumns().add(4, deletePasswordColumn);
   }
 
   private EventHandler<CellEditEvent<PasswordDto, String>> passwordEditEventHandler() {

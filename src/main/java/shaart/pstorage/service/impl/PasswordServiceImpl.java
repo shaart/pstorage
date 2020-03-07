@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import shaart.pstorage.converter.PasswordConverter;
 import shaart.pstorage.dto.PasswordDto;
@@ -83,6 +84,11 @@ public class PasswordServiceImpl implements PasswordService {
     foundPassword.setEncryptionType(encryptionType);
     foundPassword.setValue(newEncryptedValue);
     repository.save(foundPassword);
+  }
+
+  @Override
+  public void deleteById(@NonNull String passwordId) {
+    repository.deleteById(Integer.valueOf(passwordId));
   }
 
   /**

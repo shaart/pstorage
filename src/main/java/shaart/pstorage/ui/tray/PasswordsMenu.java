@@ -27,8 +27,8 @@ public class PasswordsMenu extends Menu {
     add(passwordItem);
   }
 
-  public void removePassword(MenuItem item) {
-    remove(item);
+  public void removePassword(String alias) {
+    updateIfFound(item -> item.getLabel().equals(alias), (item, index) -> remove(index));
   }
 
   public void changePasswords(List<MenuItem> passwordItems) {

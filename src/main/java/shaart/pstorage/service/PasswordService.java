@@ -21,4 +21,6 @@ public interface PasswordService {
 
   void updatePassword(String passwordId, EncryptionType encryptionType,
       String newEncryptedValue);
+
+  void deleteById(String passwordId);
 }

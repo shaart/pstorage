@@ -87,4 +87,13 @@ public class UserDataContext {
   public void updatePasswordLabel(String oldAlias, String newAlias) {
     PasswordsMenu.getInstance().updatePasswordAlias(oldAlias, newAlias);
   }
+
+  /**
+   * Removes password with alias.
+   *
+   * @param alias password's alias
+   */
+  public void removePassword(String alias) {
+    PasswordsMenu.getInstance().removePassword(alias);
+  }
 }
