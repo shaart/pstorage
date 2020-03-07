@@ -28,5 +28,8 @@ public class PasswordDto {
   @ToString.Exclude
   private String encryptedValue;
 
+  @ToString.Exclude
+  private final String showedEncryptedValue = "***";
+
   private LocalDateTime createdAt;
 }
