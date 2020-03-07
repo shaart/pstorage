@@ -49,7 +49,7 @@ public class UserServiceImpl implements UserService {
   public boolean isCorrectPasswordFor(String username, String password) {
     Optional<User> user = repository.findByName(username);
     if (!user.isPresent()) {
-      throw new UserNotFoundException();
+      throw new UserNotFoundException(username);
     }
     User foundUser = user.get();
 
