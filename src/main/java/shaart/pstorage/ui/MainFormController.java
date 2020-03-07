@@ -24,6 +24,7 @@ import shaart.pstorage.dto.CryptoResult;
 import shaart.pstorage.dto.PasswordDto;
 import shaart.pstorage.dto.UserDto;
 import shaart.pstorage.exception.AliasAlreadyExistsException;
+import shaart.pstorage.exception.UnauthorizedException;
 import shaart.pstorage.service.EncryptionService;
 import shaart.pstorage.service.PasswordService;
 import shaart.pstorage.service.SecurityAwareService;
@@ -87,6 +88,7 @@ public class MainFormController {
 
     TableColumn<PasswordDto, String> passwordColumn = new TableColumn<>("Password");
     passwordColumn.setCellValueFactory(new PropertyValueFactory<>("showedEncryptedValue"));
+    passwordColumn.setOnEditStart(passwordEditEventHandler());
 
     TableColumn<PasswordDto, Button> actionsColumn = new TableColumn<>("Actions");
     actionsColumn.setCellValueFactory(new PropertyValueFactory<>("DUMMY"));
@@ -112,10 +114,36 @@ public class MainFormController {
     table.getColumns().add(3, actionsColumn);
   }
 
+  private EventHandler<CellEditEvent<PasswordDto, String>> passwordEditEventHandler() {
+    return event -> {
+      final PasswordDto password = event.getRowValue();
+      final String title = String.format("Change '%s' password", password.getAlias());
+      AlertHelper.showPasswordInputDialog(title, "Enter new password:", newPassword -> {
+        if (!newPassword.isPresent()) {
+          return;
+        }
+        final String newPasswordValue = newPassword.get();
+        final CryptoResult cryptoResult = encryptionService.encryptForUser(
+            CryptoDto.of(newPasswordValue),
+            securityAwareService.currentUser()
+                .orElseThrow(() ->
+                    new UnauthorizedException("Can't update password for unauthorized user")));
+        passwordService.updatePassword(password.getId(), cryptoResult.getEncryptionType(),
+            cryptoResult.getValue());
+        password.setEncryptedValue(cryptoResult.getValue());
+        password.setEncryptionType(cryptoResult.getEncryptionType());
+
+        userDataContext.updatePasswordValue(password.getAlias(), password.getAlias(),
+            newPasswordValue);
+      });
+    };
+  }
+
   private EventHandler<CellEditEvent<PasswordDto, String>> aliasEditEventHandler() {
     return event -> {
+      final PasswordDto password = event.getRowValue();
       String newAlias = event.getNewValue();
-      final String passwordId = event.getRowValue().getId();
+      final String passwordId = password.getId();
       try {
         passwordService.updateAlias(passwordId, newAlias);
       } catch (DataIntegrityViolationException e) {
@@ -123,7 +151,10 @@ public class MainFormController {
         throw new AliasAlreadyExistsException(newAlias);
       }
       log.info("Alias updated successfully for password with id = {}", passwordId);
-      event.getRowValue().setAlias(newAlias);
+      password.setAlias(newAlias);
+
+      String oldAlias = event.getOldValue();
+      userDataContext.updatePasswordLabel(oldAlias, newAlias);
     };
   }
 
