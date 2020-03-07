@@ -38,6 +38,12 @@ gradle build
 
 
 ## Changelog
+#### 2020-03-07
+**Version 0.0.3**
+- Minimize to tray on close
+- Password's value and alias updating
+- Password removing
+
 #### 2019-08-24
 - Java 11 supporting
 - Build now depends on JAVA_HOME and Java version (8, 11+)
