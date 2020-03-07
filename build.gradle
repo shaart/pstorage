@@ -22,7 +22,7 @@ if (!supportedVersions.contains(currentJavaVersion)) {
 sourceCompatibility = currentJavaVersion
 def majorVersion = 0
 def minorVersion = 0
-def fixVersion = 2
+def fixVersion = 3
 def appVersion = "$majorVersion.$minorVersion.$fixVersion"
 version = "j$sourceCompatibility.majorVersion-$appVersion"
 
