@@ -40,10 +40,22 @@ public enum CommandFactory {
    * @return action listener that copies received value to clipboard on call
    */
   public ActionListener createCopyPasswordCommand(final String copyValue) {
-    return actionEvent -> {
-      final Clipboard systemClipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-      final StringSelection selection = new StringSelection(copyValue);
-      systemClipboard.setContents(selection, selection);
-    };
+    return actionEvent -> setValueToClipboard(copyValue);
+  }
+
+  /**
+   * Creates new "Copy Value (Password) to Clipboard" command.
+   *
+   * @param copyValue Value to be copied
+   * @return action listener that copies received value to clipboard on call
+   */
+  public Runnable createCopyPasswordAction(final String copyValue) {
+    return () -> setValueToClipboard(copyValue);
+  }
+
+  private void setValueToClipboard(String copyValue) {
+    final Clipboard systemClipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+    final StringSelection selection = new StringSelection(copyValue);
+    systemClipboard.setContents(selection, selection);
   }
 }

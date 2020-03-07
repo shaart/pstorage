@@ -6,6 +6,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -21,7 +22,7 @@ import shaart.pstorage.dto.UserDto;
 import shaart.pstorage.service.EncryptionService;
 import shaart.pstorage.service.PasswordService;
 import shaart.pstorage.service.SecurityAwareService;
-import shaart.pstorage.ui.component.PasswordCellValueFactory;
+import shaart.pstorage.ui.component.CopyPasswordAction;
 import shaart.pstorage.ui.util.AlertHelper;
 
 /**
@@ -31,6 +32,7 @@ import shaart.pstorage.ui.util.AlertHelper;
 public class MainFormController {
 
   private static final String EMPTY = "";
+  private static final String ERROR_STRING = "error";
 
   @Autowired
   private PasswordService passwordService;
@@ -77,11 +79,30 @@ public class MainFormController {
     aliasColumn.setCellValueFactory(new PropertyValueFactory<>("alias"));
 
     TableColumn<PasswordDto, String> passwordColumn = new TableColumn<>("Password");
-    passwordColumn.setCellValueFactory(new PasswordCellValueFactory<>("encryptedValue"));
+    passwordColumn.setCellValueFactory(new PropertyValueFactory<>("showedEncryptedValue"));
+
+    TableColumn<PasswordDto, Button> actionsColumn = new TableColumn<>("Actions");
+    actionsColumn.setCellValueFactory(new PropertyValueFactory<>("DUMMY"));
+
+    actionsColumn.setCellFactory(CopyPasswordAction.createCallback(
+        passwordDto -> {
+          Optional<UserDto> userDto = securityAwareService.currentUser();
+
+          if (!userDto.isPresent()) {
+            raiseUnauthorizedAlert();
+            return ERROR_STRING;
+          }
+
+          final CryptoDto cryptoDto = CryptoDto.of(passwordDto.getEncryptedValue());
+          final UserDto user = userDto.get();
+          final CryptoResult cryptoResult = encryptionService.decryptForUser(cryptoDto, user);
+          return cryptoResult.getValue();
+        }));
 
     table.getColumns().add(0, idColumn);
     table.getColumns().add(1, aliasColumn);
     table.getColumns().add(2, passwordColumn);
+    table.getColumns().add(3, actionsColumn);
   }
 
   void fillWithData() {
@@ -99,19 +120,12 @@ public class MainFormController {
     Optional<UserDto> userDto = securityAwareService.currentUser();
 
     if (!userDto.isPresent()) {
-      log.trace("User not found in security context - unauthorized");
-      AlertHelper.showAlert(AlertType.ERROR, "Error", "Unauthorized");
+      raiseUnauthorizedAlert();
       return;
     }
 
-    final String userMasterPassword = userDto.get().getMasterPassword();
-    final CryptoDto passwordParam = CryptoDto.of(userMasterPassword);
-    final String decryptedMasterPassword = encryptionService.decrypt(passwordParam)
-        .getValue();
-
     final CryptoDto encryptionDto = CryptoDto.of(txtEncryptedValue.getText());
-    final CryptoResult encrypted =
-        encryptionService.encrypt(encryptionDto, decryptedMasterPassword);
+    final CryptoResult encrypted = encryptionService.encryptForUser(encryptionDto, userDto.get());
 
     PasswordDto password = PasswordDto.builder()
         .alias(txtAlias.getText())
@@ -129,6 +143,11 @@ public class MainFormController {
     userDataContext.addPassword(txtAlias.getText(), txtEncryptedValue.getText());
 
     clearFields();
+  }
+
+  private void raiseUnauthorizedAlert() {
+    log.trace("User not found in security context - unauthorized");
+    AlertHelper.showAlert(AlertType.ERROR, "Error", "Unauthorized");
   }
 
   private void clearFields() {

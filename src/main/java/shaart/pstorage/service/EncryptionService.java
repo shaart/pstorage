@@ -2,6 +2,7 @@ package shaart.pstorage.service;
 
 import shaart.pstorage.dto.CryptoDto;
 import shaart.pstorage.dto.CryptoResult;
+import shaart.pstorage.dto.UserDto;
 import shaart.pstorage.enumeration.EncryptionType;
 
 /**
@@ -27,6 +28,15 @@ public interface EncryptionService {
   CryptoResult encrypt(CryptoDto encryptionDto, String key);
 
   /**
+   * Encrypts a value using user's master password as a key.
+   *
+   * @param encryptionDto a value to be encrypted
+   * @param user a user with master password
+   * @return encrypted value
+   */
+  CryptoResult encryptForUser(CryptoDto encryptionDto, UserDto user);
+
+  /**
    * Decrypts a value using default key.
    *
    * @param value a value to be decrypted
@@ -43,4 +53,13 @@ public interface EncryptionService {
   CryptoResult decrypt(CryptoDto value, String key);
 
   CryptoResult decrypt(EncryptionType encryptionType, CryptoDto cryptoDto, String key);
+
+  /**
+   * Encrypts a value using user's master password as a key.
+   *
+   * @param value a value to be decrypted
+   * @param user a user with master password
+   * @return decrypted value
+   */
+  CryptoResult decryptForUser(CryptoDto value, UserDto user);
 }
