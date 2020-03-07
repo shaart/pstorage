@@ -4,21 +4,26 @@ import java.util.List;
 import java.util.Optional;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javax.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import shaart.pstorage.component.UserDataContext;
 import shaart.pstorage.dto.CryptoDto;
 import shaart.pstorage.dto.CryptoResult;
 import shaart.pstorage.dto.PasswordDto;
 import shaart.pstorage.dto.UserDto;
+import shaart.pstorage.exception.AliasAlreadyExistsException;
 import shaart.pstorage.service.EncryptionService;
 import shaart.pstorage.service.PasswordService;
 import shaart.pstorage.service.SecurityAwareService;
@@ -77,6 +82,8 @@ public class MainFormController {
 
     TableColumn<PasswordDto, String> aliasColumn = new TableColumn<>("Alias");
     aliasColumn.setCellValueFactory(new PropertyValueFactory<>("alias"));
+    aliasColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+    aliasColumn.setOnEditCommit(aliasEditEventHandler());
 
     TableColumn<PasswordDto, String> passwordColumn = new TableColumn<>("Password");
     passwordColumn.setCellValueFactory(new PropertyValueFactory<>("showedEncryptedValue"));
@@ -103,6 +110,21 @@ public class MainFormController {
     table.getColumns().add(1, aliasColumn);
     table.getColumns().add(2, passwordColumn);
     table.getColumns().add(3, actionsColumn);
+  }
+
+  private EventHandler<CellEditEvent<PasswordDto, String>> aliasEditEventHandler() {
+    return event -> {
+      String newAlias = event.getNewValue();
+      final String passwordId = event.getRowValue().getId();
+      try {
+        passwordService.updateAlias(passwordId, newAlias);
+      } catch (DataIntegrityViolationException e) {
+        log.error(e.getMessage(), e);
+        throw new AliasAlreadyExistsException(newAlias);
+      }
+      log.info("Alias updated successfully for password with id = {}", passwordId);
+      event.getRowValue().setAlias(newAlias);
+    };
   }
 
   void fillWithData() {
@@ -137,7 +159,14 @@ public class MainFormController {
     log.debug("Saving password with alias {} for user {}",
         password.getAlias(),
         password.getUser().getName());
-    final PasswordDto savedPassword = passwordService.save(password);
+
+    final PasswordDto savedPassword;
+    try {
+      savedPassword = passwordService.save(password);
+    } catch (DataIntegrityViolationException e) {
+      log.error(e.getMessage(), e);
+      throw new AliasAlreadyExistsException(password.getAlias());
+    }
 
     data.add(savedPassword);
     userDataContext.addPassword(txtAlias.getText(), txtEncryptedValue.getText());

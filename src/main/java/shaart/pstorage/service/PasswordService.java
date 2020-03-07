@@ -15,4 +15,6 @@ public interface PasswordService {
   PasswordDto save(PasswordDto password);
 
   List<PasswordDto> findFavoritesByUser(String userName);
+
+  void updateAlias(String passwordId, String newAlias);
 }
