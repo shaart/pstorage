@@ -163,9 +163,9 @@ public class MainFormController {
         throw new AliasAlreadyExistsException(newAlias);
       }
       log.info("Alias updated successfully for password with id = {}", passwordId);
+      String oldAlias = event.getOldValue();
       password.setAlias(newAlias);
 
-      String oldAlias = event.getOldValue();
       userDataContext.updatePasswordLabel(oldAlias, newAlias);
     };
   }
