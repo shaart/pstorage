@@ -12,6 +12,7 @@ import shaart.pstorage.config.PStorageProperties;
 import shaart.pstorage.crypto.Coder;
 import shaart.pstorage.dto.CryptoDto;
 import shaart.pstorage.dto.CryptoResult;
+import shaart.pstorage.dto.UserDto;
 import shaart.pstorage.enumeration.EncryptionType;
 import shaart.pstorage.exception.CryptoException;
 import shaart.pstorage.service.EncryptionService;
@@ -46,6 +47,15 @@ public class EncryptionServiceImpl implements EncryptionService {
   }
 
   @Override
+  public CryptoResult encryptForUser(CryptoDto encryptionDto, UserDto user) {
+    final String userMasterPassword = user.getMasterPassword();
+    final CryptoDto passwordParam = CryptoDto.of(userMasterPassword);
+    final String decryptedMasterPassword = decrypt(passwordParam)
+        .getValue();
+    return encrypt(encryptionDto, decryptedMasterPassword);
+  }
+
+  @Override
   public CryptoResult decrypt(CryptoDto decryptionDto) {
     String key = pstorageProperties.getAes().getCommon().getKey();
 
@@ -71,5 +81,14 @@ public class EncryptionServiceImpl implements EncryptionService {
         .value(foundCoder.decrypt(cryptoDto.getValue(), key))
         .encryptionType(this.coder.getEncryptionType())
         .build();
+  }
+
+  @Override
+  public CryptoResult decryptForUser(CryptoDto value, UserDto user) {
+    final String userMasterPassword = user.getMasterPassword();
+    final CryptoDto passwordParam = CryptoDto.of(userMasterPassword);
+    final String decryptedMasterPassword = decrypt(passwordParam).getValue();
+
+    return decrypt(value, decryptedMasterPassword);
   }
 }

@@ -40,6 +40,8 @@ public class LoginFormController {
   private static final String PASS = "Password";
   private static final String USERNAME = "Username";
 
+  private SystemTrayIcon systemTrayIcon = SystemTrayIcon.INSTANCE;
+
   @Autowired
   @Qualifier("mainView")
   private ViewHolder<MainFormController> mainViewHolder;
@@ -173,6 +175,7 @@ public class LoginFormController {
 
     stage.setResizable(true);
     stage.centerOnScreen();
+    systemTrayIcon.setCurrentMainStage(stage);
     stage.show();
   }
 

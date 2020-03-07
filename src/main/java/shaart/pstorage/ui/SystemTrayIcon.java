@@ -11,10 +11,13 @@ import java.awt.SystemTray;
 import java.awt.TrayIcon;
 import java.io.IOException;
 import java.net.URL;
+import javafx.application.Platform;
 import javafx.scene.control.Alert.AlertType;
+import javafx.stage.Stage;
 import javax.imageio.ImageIO;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import shaart.pstorage.exception.SystemTrayException;
 import shaart.pstorage.ui.tray.PasswordsMenu;
@@ -27,6 +30,9 @@ public enum SystemTrayIcon {
 
   private TrayIcon trayIcon;
   private SystemTray systemTray;
+
+  @Setter
+  private Stage currentMainStage;
 
   /**
    * Initializes an application's icon on the System Tray.
@@ -58,6 +64,7 @@ public enum SystemTrayIcon {
 
     final PopupMenu popup = createPopupMenu();
     trayIcon.setPopupMenu(popup);
+    trayIcon.addActionListener(e -> Platform.runLater(() -> currentMainStage.show()));
 
     try {
       log.info("Adding icon to system tray");

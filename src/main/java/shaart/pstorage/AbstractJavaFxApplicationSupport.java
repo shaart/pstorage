@@ -45,6 +45,7 @@ public abstract class AbstractJavaFxApplicationSupport extends Application {
   public void init() {
     log.trace("Showing splash screen");
     Platform.runLater(this::showSplash);
+    Platform.setImplicitExit(false);
 
     log.trace("Starting spring boot");
     try {

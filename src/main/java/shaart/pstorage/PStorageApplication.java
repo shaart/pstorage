@@ -15,6 +15,7 @@ import org.springframework.context.annotation.Lazy;
 import shaart.pstorage.config.PStorageProperties;
 import shaart.pstorage.dto.ViewHolder;
 import shaart.pstorage.handler.GlobalExceptionHandler;
+import shaart.pstorage.ui.SystemTrayIcon;
 import shaart.pstorage.util.ExceptionUtil;
 
 /**
@@ -29,8 +30,10 @@ public class PStorageApplication extends AbstractJavaFxApplicationSupport {
   @Value("${pstorage.ui.title:PStorage}")
   private String windowTitle;
 
+  @SuppressWarnings("rawtypes")
   private ViewHolder initialViewHolder;
 
+  private SystemTrayIcon systemTrayIcon = SystemTrayIcon.INSTANCE;
   private ExceptionUtil exceptionUtil = ExceptionUtil.getInstance();
 
   public static void main(String[] args) {
@@ -40,7 +43,7 @@ public class PStorageApplication extends AbstractJavaFxApplicationSupport {
 
   @Autowired
   @Qualifier("loginView")
-  public void setInitialViewHolder(ViewHolder initialViewHolder) {
+  public void setInitialViewHolder(@SuppressWarnings("rawtypes") ViewHolder initialViewHolder) {
     this.initialViewHolder = initialViewHolder;
   }
 
@@ -83,6 +86,7 @@ public class PStorageApplication extends AbstractJavaFxApplicationSupport {
     stage.setScene(new Scene(initialViewHolder.getView()));
     stage.setResizable(true);
     stage.centerOnScreen();
+    systemTrayIcon.setCurrentMainStage(stage);
     stage.show();
   }
 }

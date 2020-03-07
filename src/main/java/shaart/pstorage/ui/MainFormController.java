@@ -4,24 +4,32 @@ import java.util.List;
 import java.util.Optional;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javax.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import shaart.pstorage.component.UserDataContext;
 import shaart.pstorage.dto.CryptoDto;
 import shaart.pstorage.dto.CryptoResult;
 import shaart.pstorage.dto.PasswordDto;
 import shaart.pstorage.dto.UserDto;
+import shaart.pstorage.exception.AliasAlreadyExistsException;
+import shaart.pstorage.exception.UnauthorizedException;
 import shaart.pstorage.service.EncryptionService;
 import shaart.pstorage.service.PasswordService;
 import shaart.pstorage.service.SecurityAwareService;
-import shaart.pstorage.ui.component.PasswordCellValueFactory;
+import shaart.pstorage.ui.component.CopyPasswordAction;
+import shaart.pstorage.ui.component.DeletePasswordAction;
 import shaart.pstorage.ui.util.AlertHelper;
 
 /**
@@ -31,6 +39,7 @@ import shaart.pstorage.ui.util.AlertHelper;
 public class MainFormController {
 
   private static final String EMPTY = "";
+  private static final String ERROR_STRING = "error";
 
   @Autowired
   private PasswordService passwordService;
@@ -75,13 +84,90 @@ public class MainFormController {
 
     TableColumn<PasswordDto, String> aliasColumn = new TableColumn<>("Alias");
     aliasColumn.setCellValueFactory(new PropertyValueFactory<>("alias"));
+    aliasColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+    aliasColumn.setOnEditCommit(aliasEditEventHandler());
 
     TableColumn<PasswordDto, String> passwordColumn = new TableColumn<>("Password");
-    passwordColumn.setCellValueFactory(new PasswordCellValueFactory<>("encryptedValue"));
+    passwordColumn.setCellValueFactory(new PropertyValueFactory<>("showedEncryptedValue"));
+    passwordColumn.setOnEditStart(passwordEditEventHandler());
+
+    TableColumn<PasswordDto, Button> copyToClipboardColumn = new TableColumn<>("Actions");
+    copyToClipboardColumn.setCellValueFactory(new PropertyValueFactory<>("DUMMY"));
+
+    copyToClipboardColumn.setCellFactory(CopyPasswordAction.createCallback(
+        passwordDto -> {
+          Optional<UserDto> userDto = securityAwareService.currentUser();
+
+          if (!userDto.isPresent()) {
+            raiseUnauthorizedAlert();
+            return ERROR_STRING;
+          }
+
+          final CryptoDto cryptoDto = CryptoDto.of(passwordDto.getEncryptedValue());
+          final UserDto user = userDto.get();
+          final CryptoResult cryptoResult = encryptionService.decryptForUser(cryptoDto, user);
+          return cryptoResult.getValue();
+        }));
+
+    TableColumn<PasswordDto, Button> deletePasswordColumn = new TableColumn<>("Actions");
+    deletePasswordColumn.setCellValueFactory(new PropertyValueFactory<>("DUMMY"));
+
+    deletePasswordColumn.setCellFactory(DeletePasswordAction.createCallback(
+        passwordDto -> {
+          passwordService.deleteById(passwordDto.getId());
+          userDataContext.removePassword(passwordDto.getAlias());
+          table.getItems().remove(passwordDto);
+        }));
 
     table.getColumns().add(0, idColumn);
     table.getColumns().add(1, aliasColumn);
     table.getColumns().add(2, passwordColumn);
+    table.getColumns().add(3, copyToClipboardColumn);
+    table.getColumns().add(4, deletePasswordColumn);
+  }
+
+  private EventHandler<CellEditEvent<PasswordDto, String>> passwordEditEventHandler() {
+    return event -> {
+      final PasswordDto password = event.getRowValue();
+      final String title = String.format("Change '%s' password", password.getAlias());
+      AlertHelper.showPasswordInputDialog(title, "Enter new password:", newPassword -> {
+        if (!newPassword.isPresent()) {
+          return;
+        }
+        final String newPasswordValue = newPassword.get();
+        final CryptoResult cryptoResult = encryptionService.encryptForUser(
+            CryptoDto.of(newPasswordValue),
+            securityAwareService.currentUser()
+                .orElseThrow(() ->
+                    new UnauthorizedException("Can't update password for unauthorized user")));
+        passwordService.updatePassword(password.getId(), cryptoResult.getEncryptionType(),
+            cryptoResult.getValue());
+        password.setEncryptedValue(cryptoResult.getValue());
+        password.setEncryptionType(cryptoResult.getEncryptionType());
+
+        userDataContext.updatePasswordValue(password.getAlias(), password.getAlias(),
+            newPasswordValue);
+      });
+    };
+  }
+
+  private EventHandler<CellEditEvent<PasswordDto, String>> aliasEditEventHandler() {
+    return event -> {
+      final PasswordDto password = event.getRowValue();
+      String newAlias = event.getNewValue();
+      final String passwordId = password.getId();
+      try {
+        passwordService.updateAlias(passwordId, newAlias);
+      } catch (DataIntegrityViolationException e) {
+        log.error(e.getMessage(), e);
+        throw new AliasAlreadyExistsException(newAlias);
+      }
+      log.info("Alias updated successfully for password with id = {}", passwordId);
+      String oldAlias = event.getOldValue();
+      password.setAlias(newAlias);
+
+      userDataContext.updatePasswordLabel(oldAlias, newAlias);
+    };
   }
 
   void fillWithData() {
@@ -99,19 +185,12 @@ public class MainFormController {
     Optional<UserDto> userDto = securityAwareService.currentUser();
 
     if (!userDto.isPresent()) {
-      log.trace("User not found in security context - unauthorized");
-      AlertHelper.showAlert(AlertType.ERROR, "Error", "Unauthorized");
+      raiseUnauthorizedAlert();
       return;
     }
 
-    final String userMasterPassword = userDto.get().getMasterPassword();
-    final CryptoDto passwordParam = CryptoDto.of(userMasterPassword);
-    final String decryptedMasterPassword = encryptionService.decrypt(passwordParam)
-        .getValue();
-
     final CryptoDto encryptionDto = CryptoDto.of(txtEncryptedValue.getText());
-    final CryptoResult encrypted =
-        encryptionService.encrypt(encryptionDto, decryptedMasterPassword);
+    final CryptoResult encrypted = encryptionService.encryptForUser(encryptionDto, userDto.get());
 
     PasswordDto password = PasswordDto.builder()
         .alias(txtAlias.getText())
@@ -123,12 +202,24 @@ public class MainFormController {
     log.debug("Saving password with alias {} for user {}",
         password.getAlias(),
         password.getUser().getName());
-    final PasswordDto savedPassword = passwordService.save(password);
+
+    final PasswordDto savedPassword;
+    try {
+      savedPassword = passwordService.save(password);
+    } catch (DataIntegrityViolationException e) {
+      log.error(e.getMessage(), e);
+      throw new AliasAlreadyExistsException(password.getAlias());
+    }
 
     data.add(savedPassword);
     userDataContext.addPassword(txtAlias.getText(), txtEncryptedValue.getText());
 
     clearFields();
+  }
+
+  private void raiseUnauthorizedAlert() {
+    log.trace("User not found in security context - unauthorized");
+    AlertHelper.showAlert(AlertType.ERROR, "Error", "Unauthorized");
   }
 
   private void clearFields() {
