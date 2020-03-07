@@ -54,16 +54,37 @@ public class UserDataContext {
     };
   }
 
-  private MenuItem toPasswordMenuItem(String label, String value) {
+  private MenuItem toPasswordMenuItem(String label, String copyValue) {
     final MenuItem item = new MenuItem(label);
-    final ActionListener copyPasswordCommand = commandFactory.createCopyPasswordCommand(value);
+    final ActionListener copyPasswordCommand = commandFactory.createCopyPasswordCommand(copyValue);
 
     item.addActionListener(copyPasswordCommand);
     return item;
   }
 
   public void addPassword(String alias, String value) {
-    PasswordsMenu.getInstance()
-        .addPassword(toPasswordMenuItem(alias, value));
+    PasswordsMenu.getInstance().addPassword(toPasswordMenuItem(alias, value));
+  }
+
+  /**
+   * Updates password's item in tray.
+   *
+   * @param oldAlias previous alias of password before update if changed or current if not
+   * @param newAlias new alias or previous if not changed
+   * @param newDecryptedPassword decrypted value of a new password
+   */
+  public void updatePasswordValue(String oldAlias, String newAlias, String newDecryptedPassword) {
+    final MenuItem menuItem = toPasswordMenuItem(newAlias, newDecryptedPassword);
+    PasswordsMenu.getInstance().updatePassword(oldAlias, menuItem);
+  }
+
+  /**
+   * Updates password's item in tray.
+   *
+   * @param oldAlias previous alias of password before update
+   * @param newAlias new alias
+   */
+  public void updatePasswordLabel(String oldAlias, String newAlias) {
+    PasswordsMenu.getInstance().updatePasswordAlias(oldAlias, newAlias);
   }
 }
