@@ -3,6 +3,7 @@ package shaart.pstorage.ui;
 import jakarta.annotation.PostConstruct;
 import java.util.List;
 import java.util.Optional;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
@@ -10,11 +11,13 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.util.Callback;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -92,7 +95,7 @@ public class MainFormController {
     passwordColumn.setOnEditStart(passwordEditEventHandler());
 
     TableColumn<PasswordDto, Button> copyToClipboardColumn = new TableColumn<>("Actions");
-    copyToClipboardColumn.setCellValueFactory(new PropertyValueFactory<>("DUMMY"));
+    copyToClipboardColumn.setCellValueFactory(doNothingCellValueFactory());
 
     copyToClipboardColumn.setCellFactory(CopyPasswordAction.createCallback(
         passwordDto -> {
@@ -110,7 +113,7 @@ public class MainFormController {
         }));
 
     TableColumn<PasswordDto, Button> deletePasswordColumn = new TableColumn<>("Actions");
-    deletePasswordColumn.setCellValueFactory(new PropertyValueFactory<>("DUMMY"));
+    deletePasswordColumn.setCellValueFactory(doNothingCellValueFactory());
 
     deletePasswordColumn.setCellFactory(DeletePasswordAction.createCallback(
         passwordDto -> {
@@ -124,6 +127,10 @@ public class MainFormController {
     table.getColumns().add(2, passwordColumn);
     table.getColumns().add(3, copyToClipboardColumn);
     table.getColumns().add(4, deletePasswordColumn);
+  }
+
+  private Callback<CellDataFeatures<PasswordDto, Button>, ObservableValue<Button>> doNothingCellValueFactory() {
+    return param -> null;
   }
 
   private EventHandler<CellEditEvent<PasswordDto, String>> passwordEditEventHandler() {
