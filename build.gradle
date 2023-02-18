@@ -32,6 +32,11 @@ version = "$majorVersion.$minorVersion.$fixVersion" as Object
 group = "com.github.shaart"
 mainClassName = "shaart.pstorage.PstorageApplication"
 
+applicationDefaultJvmArgs = [
+        "--module-path javafx/win64/javafx-sdk-17.0.6/lib", // todo find a way to specify ENV variable
+        "--add-modules=javafx.controls,javafx.fxml,javafx.swing"
+]
+
 java {
     sourceCompatibility = "$javaSourcesVersion" as Object
     targetCompatibility = "$javaTargetVersion" as Object
