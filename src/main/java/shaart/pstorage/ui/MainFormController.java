@@ -98,7 +98,7 @@ public class MainFormController {
         passwordDto -> {
           Optional<UserDto> userDto = securityAwareService.currentUser();
 
-          if (!userDto.isPresent()) {
+          if (userDto.isEmpty()) {
             raiseUnauthorizedAlert();
             return ERROR_STRING;
           }
@@ -131,7 +131,7 @@ public class MainFormController {
       final PasswordDto password = event.getRowValue();
       final String title = String.format("Change '%s' password", password.getAlias());
       AlertHelper.showPasswordInputDialog(title, "Enter new password:", newPassword -> {
-        if (!newPassword.isPresent()) {
+        if (newPassword.isEmpty()) {
           return;
         }
         final String newPasswordValue = newPassword.get();
@@ -184,7 +184,7 @@ public class MainFormController {
     log.trace("Handling save password action");
     Optional<UserDto> userDto = securityAwareService.currentUser();
 
-    if (!userDto.isPresent()) {
+    if (userDto.isEmpty()) {
       raiseUnauthorizedAlert();
       return;
     }

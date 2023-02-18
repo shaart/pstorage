@@ -1,11 +1,11 @@
 package shaart.pstorage;
 
 import javafx.embed.swing.JFXPanel;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.springframework.util.Assert;
 
-public class PstorageApplicationTests extends SpringAbstractTest {
+class PstorageApplicationTests extends SpringAbstractTest {
 
   @BeforeAll
   public static void bootstrapJavaFx() {
@@ -13,8 +13,8 @@ public class PstorageApplicationTests extends SpringAbstractTest {
   }
 
   @Test
-  public void contextLoads() {
-    Assert.isTrue(true, "Application context should be able to load");
+  void contextLoads() {
+    Assertions.assertTrue(true, "Application context should be able to load");
   }
 
 }

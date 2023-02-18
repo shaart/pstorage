@@ -3,7 +3,6 @@ package shaart.pstorage.service.impl;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import shaart.pstorage.converter.RoleConverter;
@@ -36,7 +35,7 @@ public class RoleServiceImpl implements RoleService {
   public List<RoleDto> findAll() {
     return repository.findAll().stream()
         .map(roleConverter::toDto)
-        .collect(Collectors.toList());
+        .toList();
   }
 
   @Override

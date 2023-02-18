@@ -6,7 +6,6 @@ import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import shaart.pstorage.converter.UserConverter;
@@ -36,7 +35,7 @@ public class UserServiceImpl implements UserService {
   public List<UserDto> findAll() {
     return repository.findAll().stream()
         .map(userConverter::toDto)
-        .collect(Collectors.toList());
+        .toList();
   }
 
   @Override

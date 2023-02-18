@@ -4,7 +4,6 @@ import java.awt.MenuItem;
 import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import shaart.pstorage.dto.CryptoDto;
@@ -38,7 +37,7 @@ public class UserDataContext {
 
     final List<MenuItem> favoritePasswordItems = userFavoritePasswords.stream()
         .map(toPasswordMenuItem(decryptedMasterPassword))
-        .collect(Collectors.toList());
+        .toList();
 
     PasswordsMenu.getInstance().changePasswords(favoritePasswordItems);
   }
@@ -69,8 +68,9 @@ public class UserDataContext {
   /**
    * Updates password's item in tray.
    *
-   * @param oldAlias previous alias of password before update if changed or current if not
-   * @param newAlias new alias or previous if not changed
+   * @param oldAlias             previous alias of password before update if changed or current if
+   *                             not
+   * @param newAlias             new alias or previous if not changed
    * @param newDecryptedPassword decrypted value of a new password
    */
   public void updatePasswordValue(String oldAlias, String newAlias, String newDecryptedPassword) {

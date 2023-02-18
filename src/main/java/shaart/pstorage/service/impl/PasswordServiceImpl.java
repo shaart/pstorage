@@ -49,7 +49,7 @@ public class PasswordServiceImpl implements PasswordService {
   public List<PasswordDto> findAllByUser(String userName) {
     return repository.findAllByUserName(userName).stream()
         .map(passwordConverter::toDto)
-        .collect(Collectors.toList());
+        .toList();
   }
 
   @Override
@@ -65,7 +65,7 @@ public class PasswordServiceImpl implements PasswordService {
     //TODO 19.08.2019 00:41 add table for user-favorite-passwords and change logic here
     return repository.findAllByUserName(userName).stream()
         .map(passwordConverter::toDto)
-        .collect(Collectors.toList());
+        .toList();
   }
 
   @Override

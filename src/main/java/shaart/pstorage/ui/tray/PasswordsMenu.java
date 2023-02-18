@@ -4,6 +4,7 @@ import java.awt.Menu;
 import java.awt.MenuItem;
 import java.util.List;
 import java.util.function.BiConsumer;
+import java.util.function.ObjIntConsumer;
 import java.util.function.Predicate;
 import lombok.extern.slf4j.Slf4j;
 
@@ -54,7 +55,7 @@ public class PasswordsMenu extends Menu {
         (item, index) -> item.setLabel(newAlias));
   }
 
-  private void updateIfFound(Predicate<MenuItem> isSame, BiConsumer<MenuItem, Integer> updater) {
+  private void updateIfFound(Predicate<MenuItem> isSame, ObjIntConsumer<MenuItem> updater) {
     final int itemCount = getItemCount();
     boolean wasFound = false;
     for (int i = 0; i < itemCount; i++) {

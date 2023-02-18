@@ -21,6 +21,7 @@
   <!--    <style basedir="${doc.dir}" destdir="${doc.dir}"                            -->
   <!--            includes="checkstyle_report.xml"                                    -->
   <!--            style="${doc.dir}/checkstyle-noframes-severity-sorted.xsl"/>        -->
+  <!-- << End of usage                                                                -->
 
   <xsl:template match="checkstyle">
     <html>

@@ -16,7 +16,7 @@ import shaart.pstorage.crypto.impl.AesCoder;
 import shaart.pstorage.dto.CryptoDto;
 import shaart.pstorage.exception.CryptoException;
 
-public class EncryptionServiceImplTest extends SpringAbstractTest {
+class EncryptionServiceImplTest extends SpringAbstractTest {
 
   @Autowired
   private PstorageProperties properties;
@@ -28,12 +28,12 @@ public class EncryptionServiceImplTest extends SpringAbstractTest {
   private EncryptionServiceImpl encryptionService;
 
   @BeforeEach
-  public void init() {
+  void init() {
     encryptionService = new EncryptionServiceImpl(properties, aesCoder);
   }
 
   @Test
-  public void encrypt() {
+  void encrypt() {
     final String initial = "initialTestPassword";
 
     final String encrypted = encryptionService.encrypt(CryptoDto.of(initial)).getValue();
@@ -44,7 +44,7 @@ public class EncryptionServiceImplTest extends SpringAbstractTest {
   }
 
   @Test
-  public void encryptSeveralTimes() {
+  void encryptSeveralTimes() {
     final String initial = "initialTestPassword";
 
     final String encrypted = encryptionService.encrypt(CryptoDto.of(initial)).getValue();
@@ -64,7 +64,7 @@ public class EncryptionServiceImplTest extends SpringAbstractTest {
   }
 
   @Test
-  public void encryptWithKey() {
+  void encryptWithKey() {
     final String initial = "initialTestPassword";
 
     final String firstKey = "firstKey";
@@ -89,7 +89,7 @@ public class EncryptionServiceImplTest extends SpringAbstractTest {
   }
 
   @Test
-  public void decryptAfterEncrypt() {
+  void decryptAfterEncrypt() {
     final String initial = "initialTestPassword";
 
     final String encrypted = encryptionService.encrypt(CryptoDto.of(initial)).getValue();
@@ -101,7 +101,7 @@ public class EncryptionServiceImplTest extends SpringAbstractTest {
   }
 
   @Test
-  public void decryptWithCorrectKey() {
+  void decryptWithCorrectKey() {
     final String initial = "initialTestPassword";
 
     final String key = "aKey";
@@ -116,7 +116,7 @@ public class EncryptionServiceImplTest extends SpringAbstractTest {
   }
 
   @Test
-  public void decryptWithWrongKey() {
+  void decryptWithWrongKey() {
     final String initial = "initialTestPassword";
 
     final String key = "aKey";
@@ -131,7 +131,7 @@ public class EncryptionServiceImplTest extends SpringAbstractTest {
   }
 
   @Test
-  public void encryptWithShortKey() {
+  void encryptWithShortKey() {
     final String initial = "initialTestPassword";
 
     final String firstKey = "a";
@@ -144,7 +144,7 @@ public class EncryptionServiceImplTest extends SpringAbstractTest {
   }
 
   @Test
-  public void encryptWithLongKey() {
+  void encryptWithLongKey() {
     final String initial = "initialTestPassword";
 
     final String firstKey = "1234567890qwertyuiopasdfghjklzxcvbnm1234567890qwertyuiopasdfghjkl";

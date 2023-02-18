@@ -7,11 +7,14 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.util.Callback;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import shaart.pstorage.dto.PasswordDto;
 import shaart.pstorage.ui.CommandFactory;
 
 @Slf4j
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class DeletePasswordAction {
 
   public static final CommandFactory COMMAND_FACTORY = CommandFactory.INSTANCE;
