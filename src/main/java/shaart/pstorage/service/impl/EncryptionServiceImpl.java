@@ -19,15 +19,16 @@ import shaart.pstorage.service.EncryptionService;
 
 @Slf4j
 @Component
-@RequiredArgsConstructor
 public class EncryptionServiceImpl implements EncryptionService {
 
   private final PstorageProperties pstorageProperties;
   private final Coder coder;
-  private Map<EncryptionType, Coder> codersMap = new EnumMap<>(EncryptionType.class);
+  private final Map<EncryptionType, Coder> codersMap = new EnumMap<>(EncryptionType.class);
 
-  @PostConstruct
-  public void init() {
+  public EncryptionServiceImpl(PstorageProperties pstorageProperties,
+      Coder coder) {
+    this.pstorageProperties = pstorageProperties;
+    this.coder = coder;
     codersMap.put(coder.getEncryptionType(), coder);
   }
 

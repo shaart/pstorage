@@ -23,7 +23,6 @@ class AesCoderTest {
   @BeforeEach
   void init() {
     aesCoder = new AesCoder();
-    aesCoder.initialize();
   }
 
   @Test

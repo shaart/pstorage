@@ -99,3 +99,7 @@ tasks.withType(Checkstyle) {
         html.stylesheet resources.text.fromFile("config/xsl/checkstyle-noframes-severity-sorted.xsl")
     }
 }
+
+test {
+    useJUnitPlatform()
+}

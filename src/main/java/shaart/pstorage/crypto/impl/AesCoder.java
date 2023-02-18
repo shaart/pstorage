@@ -1,11 +1,9 @@
 package shaart.pstorage.crypto.impl;
 
-import jakarta.annotation.PostConstruct;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
@@ -37,12 +35,10 @@ public class AesCoder implements Coder {
   private static final int IV_LENGTH = 16;
   private static final int DUMMY_VALUE = 1;
 
-  private Cipher cipher;
-  private SecretKeyFactory factory;
+  private final Cipher cipher;
+  private final SecretKeyFactory factory;
 
-  @PostConstruct
-  @Override
-  public void initialize() {
+  public AesCoder() {
     try {
       cipher = Cipher.getInstance(CYPHER_ALGORITHM);
       factory = SecretKeyFactory.getInstance(PKBDF2_ALGO);

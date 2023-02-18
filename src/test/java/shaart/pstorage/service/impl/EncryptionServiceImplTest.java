@@ -6,29 +6,36 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
 import shaart.pstorage.SpringAbstractTest;
 import shaart.pstorage.config.PstorageProperties;
+import shaart.pstorage.config.PstorageProperties.Aes;
+import shaart.pstorage.config.PstorageProperties.Aes.Common;
 import shaart.pstorage.crypto.impl.AesCoder;
 import shaart.pstorage.dto.CryptoDto;
 import shaart.pstorage.exception.CryptoException;
 
-class EncryptionServiceImplTest extends SpringAbstractTest {
+//@Disabled("Tests does not see 'javafx.embed.swing' module, need investigation")
+class EncryptionServiceImplTest {
 
-  @Autowired
-  private PstorageProperties properties;
-
-  @Autowired
-  private AesCoder aesCoder;
+  public static final String CODER_AES_KEY = "aSomeTestKey";
 
   @InjectMocks
   private EncryptionServiceImpl encryptionService;
 
   @BeforeEach
   void init() {
+    var aesCoder = new AesCoder();
+    var properties = new PstorageProperties();
+    var aes = new Aes();
+    var common = new Common();
+    common.setKey(CODER_AES_KEY);
+    aes.setCommon(common);
+    properties.setAes(aes);
     encryptionService = new EncryptionServiceImpl(properties, aesCoder);
   }
 

@@ -1,6 +1,7 @@
 package shaart.pstorage;
 
 import java.util.Objects;
+import javafx.embed.swing.JFXPanel;
 import javafx.scene.Scene;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
@@ -37,6 +38,7 @@ public class PstorageApplication extends AbstractJavaFxApplicationSupport {
   private ExceptionUtil exceptionUtil = ExceptionUtil.getInstance();
 
   public static void main(String[] args) {
+    new JFXPanel();
     log.info("Launching app...");
     launchApp(args);
   }

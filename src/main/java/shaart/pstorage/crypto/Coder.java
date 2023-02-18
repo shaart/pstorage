@@ -1,6 +1,5 @@
 package shaart.pstorage.crypto;
 
-import jakarta.annotation.PostConstruct;
 import shaart.pstorage.enumeration.EncryptionType;
 import shaart.pstorage.exception.CryptoException;
 
@@ -8,9 +7,6 @@ import shaart.pstorage.exception.CryptoException;
  * Component for encrypting and decrypting with some algorithm.
  */
 public interface Coder {
-
-  @PostConstruct
-  void initialize();
 
   /**
    * Decrypts info with a key.
