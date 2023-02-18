@@ -5,22 +5,22 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.GenericGenerator;
 import shaart.pstorage.enumeration.EncryptionType;
 
-@Table(schema = "public", name = "user")
+@Table(schema = "public", name = "usr_users")
 @Entity
 @Getter
 @Setter
@@ -30,10 +30,12 @@ import shaart.pstorage.enumeration.EncryptionType;
 public class User implements Serializable {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_id_generator")
-  @SequenceGenerator(name = "user_id_generator", sequenceName = "seq_user",
-      allocationSize = 1)
-  private Integer id;
+  @GeneratedValue(generator = "UUID")
+  @GenericGenerator(
+      name = "UUID",
+      strategy = "org.hibernate.id.UUIDGenerator"
+  )
+  private UUID id;
 
   @Column(name = "name", nullable = false, unique = true)
   private String name;

@@ -1,6 +1,5 @@
 package shaart.pstorage.converter.impl;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
@@ -22,8 +21,8 @@ public class RoleConverterImpl implements RoleConverter {
 
   @Override
   public Role toEntity(@NonNull RoleDto roleDto) {
-    final Integer id = operationUtil.asIntegerOrNull(roleDto.getId());
-    final Timestamp createdAt = operationUtil.asTimestampOrNull(roleDto.getCreatedAt());
+    var id = operationUtil.asUuidOrNull(roleDto.getId());
+    var createdAt = operationUtil.asTimestampOrNull(roleDto.getCreatedAt());
 
     return Role.builder()
         .id(id)

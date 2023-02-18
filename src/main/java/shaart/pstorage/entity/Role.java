@@ -3,19 +3,19 @@ package shaart.pstorage.entity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.GenericGenerator;
 
-@Table(schema = "public", name = "role")
+@Table(schema = "public", name = "dct_roles")
 @Entity
 @Getter
 @Setter
@@ -25,10 +25,12 @@ import lombok.Setter;
 public class Role implements Serializable {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "role_id_generator")
-  @SequenceGenerator(name = "role_id_generator", sequenceName = "seq_role",
-      allocationSize = 1)
-  private Integer id;
+  @GeneratedValue(generator = "UUID")
+  @GenericGenerator(
+      name = "UUID",
+      strategy = "org.hibernate.id.UUIDGenerator"
+  )
+  private UUID id;
 
   @Column(name = "name", nullable = false, unique = true)
   private String name;

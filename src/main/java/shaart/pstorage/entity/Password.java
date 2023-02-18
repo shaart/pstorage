@@ -5,22 +5,22 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.GenericGenerator;
 import shaart.pstorage.enumeration.EncryptionType;
 
-@Table(schema = "public", name = "password")
+@Table(schema = "public", name = "usr_passwords")
 @Entity
 @Getter
 @Setter
@@ -30,10 +30,13 @@ import shaart.pstorage.enumeration.EncryptionType;
 public class Password implements Serializable {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "password_id_generator")
-  @SequenceGenerator(name = "password_id_generator", sequenceName = "seq_password",
-      allocationSize = 1)
-  private Integer id;
+  @GeneratedValue(generator = "UUID")
+  @GenericGenerator(
+      name = "UUID",
+      strategy = "org.hibernate.id.UUIDGenerator"
+  )
+  @Column(name = "id", updatable = false, nullable = false)
+  private UUID id;
 
   @ManyToOne(optional = false)
   @JoinColumn(name = "user_id")
@@ -46,8 +49,8 @@ public class Password implements Serializable {
   @Column(name = "encrypt_type", nullable = false, length = 20)
   private EncryptionType encryptionType;
 
-  @Column(name = "value", nullable = false, unique = true)
-  private String value;
+  @Column(name = "encrypted_value", nullable = false, unique = true)
+  private String encryptedValue;
 
   @Column(name = "created_at", columnDefinition = "timestamp default now()")
   private Timestamp createdAt;

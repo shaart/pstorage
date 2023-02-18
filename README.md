@@ -7,35 +7,30 @@
 ## About
 Password Storage desktop application.
 
-# How to build
-Build depends on current Java version.
-- If JAVA_HOME references to JDK 8 - then build will use it.
-- If JAVA_HOME references to JDK 11 - then build will include OpenJFX because JavaFX is not supported since Java 10.
-- If JAVA_HOME references to JDK under 8 version - then build will be failed with "Unsupported operation" error.
+# How to build and run/debug locally
+## Prepare env
+- Install JDK 17
+- Install JavaFX 17 SDK
+  - Download JavaFX SDK - https://gluonhq.com/products/javafx/
+  - Unpack
+  - Go to `"Project Settings"` > `Libraries` > `"+"` > `Java` > `<path to unpacked JavaFX SDK /lib>` > choose all modules > apply
+  - Go to `"Run Configuration"` 
+    - add or choose existing
+    - VM options:
+      - `--module-path <path to unpacked JavaFX SDK /lib> --add-modules=javafx.controls,javafx.fxml,javafx.swing`
+
+## Build
+Build to `build/libs/`
 ```bash
-export JAVA_HOME="<path to JDK 8 or 11>"
-gradle build
+./gradlew clean build
+```
+Run
+```bash
+java -jar build/libs/pstorage-0.0.4.jar
 ```
 
-## Technologies & Tools
-| Title | Version |
-|---|---|
-| **Language** |
-| Java | 8 |
-| **Framework** |
-| JavaFX  | 2.0 |
-| OpenJFX  | 11.0.2 |
-| Spring Boot | 2.1.6.RELEASE |
-| **Database**
-| Spring Data | 2.1.6.RELEASE |
-| H2 | 1.4.199 |
-| Liquibase | 3.7.0 |
-|**Other**|
-| Gradle | 5.4.1 |
-| Lombok | 1.18.8 |
-| Checkstyle plugin | 8.23 |
-| OpenJFX plugin | 0.0.8 |
-
+# How to run built application
+- todo
 
 ## Changelog
 #### 2020-03-07

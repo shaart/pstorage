@@ -1,6 +1,5 @@
 package shaart.pstorage.converter.impl;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -9,7 +8,6 @@ import shaart.pstorage.converter.UserConverter;
 import shaart.pstorage.dto.PasswordDto;
 import shaart.pstorage.dto.UserDto;
 import shaart.pstorage.entity.Password;
-import shaart.pstorage.entity.User;
 import shaart.pstorage.util.OperationUtil;
 
 @Component
@@ -21,16 +19,16 @@ public class PasswordConverterImpl implements PasswordConverter {
 
   @Override
   public Password toEntity(PasswordDto passwordDto) {
-    final Integer id = operationUtil.asIntegerOrNull(passwordDto.getId());
-    final Timestamp createdAt = operationUtil.asTimestampOrNull(passwordDto.getCreatedAt());
-    final User user = userConverter.toEntity(passwordDto.getUser());
+    var id = operationUtil.asUuidOrNull(passwordDto.getId());
+    var createdAt = operationUtil.asTimestampOrNull(passwordDto.getCreatedAt());
+    var user = userConverter.toEntity(passwordDto.getUser());
 
     return Password.builder()
         .id(id)
         .user(user)
         .alias(passwordDto.getAlias())
         .encryptionType(passwordDto.getEncryptionType())
-        .value(passwordDto.getEncryptedValue())
+        .encryptedValue(passwordDto.getEncryptedValue())
         .createdAt(createdAt)
         .build();
   }
@@ -46,7 +44,7 @@ public class PasswordConverterImpl implements PasswordConverter {
         .user(userDto)
         .alias(passwordEntity.getAlias())
         .encryptionType(passwordEntity.getEncryptionType())
-        .encryptedValue(passwordEntity.getValue())
+        .encryptedValue(passwordEntity.getEncryptedValue())
         .createdAt(createdAt)
         .build();
   }

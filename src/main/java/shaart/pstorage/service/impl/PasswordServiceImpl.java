@@ -3,8 +3,8 @@ package shaart.pstorage.service.impl;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
@@ -82,13 +82,13 @@ public class PasswordServiceImpl implements PasswordService {
     log.info("Updating value of password with id = '{}' to new", passwordId);
     final Password foundPassword = findPasswordById(passwordId);
     foundPassword.setEncryptionType(encryptionType);
-    foundPassword.setValue(newEncryptedValue);
+    foundPassword.setEncryptedValue(newEncryptedValue);
     repository.save(foundPassword);
   }
 
   @Override
   public void deleteById(@NonNull String passwordId) {
-    repository.deleteById(Integer.valueOf(passwordId));
+    repository.deleteById(UUID.fromString(passwordId));
   }
 
   /**
@@ -99,8 +99,8 @@ public class PasswordServiceImpl implements PasswordService {
    * @throws PasswordNotFoundException if password with provided id wasn't found in database
    */
   private Password findPasswordById(String passwordId) {
-    final Optional<Password> password = repository.findById(Integer.valueOf(passwordId));
-    if (!password.isPresent()) {
+    final Optional<Password> password = repository.findById(UUID.fromString(passwordId));
+    if (password.isEmpty()) {
       final String message = String.format("Password with id = '%s' not found", passwordId);
       throw new PasswordNotFoundException(message);
     }

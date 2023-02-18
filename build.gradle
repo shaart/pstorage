@@ -8,12 +8,12 @@ plugins {
 }
 
 def majorVersion = 0
-def minorVersion = 0
-def fixVersion = 4
+def minorVersion = 1
+def fixVersion = 0
 version = "$majorVersion.$minorVersion.$fixVersion" as Object
 
 group = "com.github.shaart"
-mainClassName = "shaart.pstorage.PStorageApplication"
+mainClassName = "shaart.pstorage.PstorageApplication"
 
 java {
     sourceCompatibility = "17"
@@ -27,6 +27,7 @@ jar {
 javafx {
     version = "17"
     modules = ["javafx.controls", "javafx.fxml", "javafx.swing"]
+    configuration = 'compileOnly'
 }
 
 checkstyle {

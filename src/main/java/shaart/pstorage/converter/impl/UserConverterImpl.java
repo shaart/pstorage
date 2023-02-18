@@ -1,6 +1,5 @@
 package shaart.pstorage.converter.impl;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import org.springframework.lang.NonNull;
@@ -9,7 +8,6 @@ import shaart.pstorage.converter.RoleConverter;
 import shaart.pstorage.converter.UserConverter;
 import shaart.pstorage.dto.RoleDto;
 import shaart.pstorage.dto.UserDto;
-import shaart.pstorage.entity.Role;
 import shaart.pstorage.entity.User;
 import shaart.pstorage.util.OperationUtil;
 
@@ -22,9 +20,9 @@ public class UserConverterImpl implements UserConverter {
 
   @Override
   public User toEntity(@NonNull UserDto userDto) {
-    final Integer id = operationUtil.asIntegerOrNull(userDto.getId());
-    final Timestamp createdAt = operationUtil.asTimestampOrNull(userDto.getCreatedAt());
-    final Role role = roleConverter.toEntity(userDto.getRole());
+    var id = operationUtil.asUuidOrNull(userDto.getId());
+    var createdAt = operationUtil.asTimestampOrNull(userDto.getCreatedAt());
+    var role = roleConverter.toEntity(userDto.getRole());
 
     return User.builder()
         .id(id)

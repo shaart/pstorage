@@ -4,6 +4,7 @@ import static java.util.Objects.isNull;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -19,13 +20,13 @@ public enum OperationUtil {
   }
 
   /**
-   * Convert {@link String} to {@link Integer}.
+   * Convert {@link String} to {@link UUID}.
    *
-   * @param value initial number value
-   * @return value or null if value is null
+   * @param value initial value
+   * @return value or null if value is received null
    */
-  public Integer asIntegerOrNull(String value) {
-    return isNull(value) ? null : Integer.valueOf(value);
+  public UUID asUuidOrNull(String value) {
+    return isNull(value) ? null : UUID.fromString(value);
   }
 
   /**
@@ -39,12 +40,12 @@ public enum OperationUtil {
   }
 
   /**
-   * Convert {@link Integer} to {@link String}.
+   * Convert {@link UUID} to {@link String}.
    *
-   * @param value initial {@link LocalDateTime}
+   * @param value initial value
    * @return value or empty string if value is null
    */
-  public String asStringOrEmpty(Integer value) {
+  public String asStringOrEmpty(UUID value) {
     return isNull(value) ? "" : value.toString();
   }
 
