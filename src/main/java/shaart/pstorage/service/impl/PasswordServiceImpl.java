@@ -1,10 +1,10 @@
 package shaart.pstorage.service.impl;
 
+import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import javax.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
@@ -32,7 +32,7 @@ public class PasswordServiceImpl implements PasswordService {
   @Override
   public List<PasswordDto> findAll(Supplier<Optional<UserDto>> currentUserSupplier) {
     final Optional<UserDto> contextUser = currentUserSupplier.get();
-    if (!contextUser.isPresent()) {
+    if (contextUser.isEmpty()) {
       throw new UnauthorizedException("Can't load user's passwords because not authorized");
     }
 
@@ -40,7 +40,7 @@ public class PasswordServiceImpl implements PasswordService {
     if (RoleType.ADMIN.name().equals(currentUser.getRole().getName())) {
       return repository.findAll().stream()
           .map(passwordConverter::toDto)
-          .collect(Collectors.toList());
+          .toList();
     }
     return findAllByUser(currentUser.getName());
   }

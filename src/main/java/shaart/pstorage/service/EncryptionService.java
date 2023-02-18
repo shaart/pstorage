@@ -22,7 +22,7 @@ public interface EncryptionService {
    * Encrypts a value using key.
    *
    * @param encryptionDto a value to be encrypted
-   * @param key an encryption key
+   * @param key           an encryption key
    * @return encrypted value
    */
   CryptoResult encrypt(CryptoDto encryptionDto, String key);
@@ -31,7 +31,7 @@ public interface EncryptionService {
    * Encrypts a value using user's master password as a key.
    *
    * @param encryptionDto a value to be encrypted
-   * @param user a user with master password
+   * @param user          a user with master password
    * @return encrypted value
    */
   CryptoResult encryptForUser(CryptoDto encryptionDto, UserDto user);
@@ -58,7 +58,7 @@ public interface EncryptionService {
    * Encrypts a value using user's master password as a key.
    *
    * @param value a value to be decrypted
-   * @param user a user with master password
+   * @param user  a user with master password
    * @return decrypted value
    */
   CryptoResult decryptForUser(CryptoDto value, UserDto user);

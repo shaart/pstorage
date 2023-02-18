@@ -1,14 +1,16 @@
 package shaart.pstorage.crypto;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 import shaart.pstorage.crypto.impl.AesCoder;
 import shaart.pstorage.exception.CryptoException;
 
-public class AesCoderTest {
+class AesCoderTest {
 
   private static final String INITIAL_TEXT = "Text to be encrypted";
   private static final String EMPTY_TEXT = "";
@@ -18,14 +20,14 @@ public class AesCoderTest {
 
   private AesCoder aesCoder;
 
-  @Before
-  public void init() {
+  @BeforeEach
+  void init() {
     aesCoder = new AesCoder();
     aesCoder.initialize();
   }
 
   @Test
-  public void encryptThenDecryptWithSameKey() {
+  void encryptThenDecryptWithSameKey() {
     final String encrypted = aesCoder.encrypt(INITIAL_TEXT, CORRECT_KEY);
 
     assertNotEquals(INITIAL_TEXT, encrypted);
@@ -36,7 +38,7 @@ public class AesCoderTest {
   }
 
   @Test
-  public void encryptThenDecryptEmptyTextWithSameKey() {
+  void encryptThenDecryptEmptyTextWithSameKey() {
     final String encrypted = aesCoder.encrypt(EMPTY_TEXT, CORRECT_KEY);
 
     assertNotEquals(EMPTY_TEXT, encrypted);
@@ -47,7 +49,7 @@ public class AesCoderTest {
   }
 
   @Test
-  public void encryptThenDecryptWithSameShortKey() {
+  void encryptThenDecryptWithSameShortKey() {
     final String encrypted = aesCoder.encrypt(INITIAL_TEXT, CORRECT_SHORT_KEY);
 
     assertNotEquals(INITIAL_TEXT, encrypted);
@@ -57,12 +59,13 @@ public class AesCoderTest {
     assertEquals(INITIAL_TEXT, decrypted);
   }
 
-  @Test(expected = CryptoException.class)
-  public void encryptThenDecryptWithDifferentKeys() {
+  @Test
+  void encryptThenDecryptWithDifferentKeys() {
     final String encrypted = aesCoder.encrypt(INITIAL_TEXT, CORRECT_KEY);
 
     assertNotEquals(INITIAL_TEXT, encrypted);
 
-    aesCoder.decrypt(encrypted, WRONG_KEY);
+    Executable executable = () -> aesCoder.decrypt(encrypted, WRONG_KEY);
+    assertThrows(CryptoException.class, executable);
   }
 }

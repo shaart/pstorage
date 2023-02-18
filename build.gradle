@@ -1,54 +1,43 @@
 plugins {
-    id 'org.springframework.boot' version '2.1.6.RELEASE'
-    id 'java'
-    // OpenJFX should be applied only for Java 11+ version
-    id 'org.openjfx.javafxplugin' version '0.0.8' apply false
+    id "org.springframework.boot" version "3.0.2"
+    id "java"
+    id "application"
+    id "checkstyle"
+    id "io.spring.dependency-management" version "1.1.0"
+    id "org.openjfx.javafxplugin" version "0.0.13"
 }
 
-def supportedVersions = [
-        JavaVersion.VERSION_1_8,
-        JavaVersion.VERSION_11
-]
-def currentJavaVersion = JavaVersion.current()
-if (!supportedVersions.contains(currentJavaVersion)) {
-    throw new UnsupportedOperationException(
-            "Application not supports Java versions under Java 8 and also Java 10. "
-                    + "Supported versions: "
-                    + supportedVersions.stream()
-                    .map({ version -> version.majorVersion })
-                    .collect())
-}
-
-sourceCompatibility = currentJavaVersion
 def majorVersion = 0
 def minorVersion = 0
-def fixVersion = 3
-def appVersion = "$majorVersion.$minorVersion.$fixVersion"
-version = "j$sourceCompatibility.majorVersion-$appVersion"
+def fixVersion = 4
+version = "$majorVersion.$minorVersion.$fixVersion" as Object
 
-apply plugin: 'io.spring.dependency-management'
-apply plugin: 'checkstyle'
-apply plugin: 'application'
-group = 'shaart'
-mainClassName = 'shaart.pstorage.PStorageApplication'
+group = "com.github.shaart"
+mainClassName = "shaart.pstorage.PStorageApplication"
 
-if (sourceCompatibility >= JavaVersion.VERSION_11) {
-    apply plugin: 'org.openjfx.javafxplugin'
-    javafx {
-        version = "11.0.2"
-        modules = ['javafx.controls', 'javafx.fxml', 'javafx.swing']
-    }
+java {
+    sourceCompatibility = "17"
+    targetCompatibility = "17"
+}
+
+jar {
+    enabled = false
+}
+
+javafx {
+    version = "17"
+    modules = ["javafx.controls", "javafx.fxml", "javafx.swing"]
 }
 
 checkstyle {
-    toolVersion '8.23'
+    toolVersion "10.7.0"
     configFile file("config/checkstyle/checkstyle.xml")
 }
 checkstyleMain {
-    source ='src/main/java'
+    source = "src/main/java"
 }
 checkstyleTest {
-    source ='src/test/java'
+    source = "src/test/java"
 }
 
 configurations {
@@ -61,31 +50,38 @@ repositories {
     mavenCentral()
 }
 
+ext {
+    lombokVersion = "1.18.26"
+    liquibaseVersion = "3.7.0"
+}
 dependencies {
     // Security
-    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation "org.springframework.boot:spring-boot-starter-security"
 
     // Data
-    compile 'org.springframework.boot:spring-boot-starter-data-jpa'
-    runtimeOnly 'com.h2database:h2'
-    compile 'org.liquibase:liquibase-core:3.7.0'
+    implementation "org.springframework.boot:spring-boot-starter-data-jpa"
+    runtimeOnly "com.h2database:h2"
+    implementation "org.liquibase:liquibase-core:$liquibaseVersion"
 
     // Annotations
-    compileOnly 'org.projectlombok:lombok'
-    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
-    annotationProcessor 'org.projectlombok:lombok'
+    compileOnly "org.projectlombok:lombok:$lombokVersion"
+    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
+    annotationProcessor "org.projectlombok:lombok:$lombokVersion"
+
+    testCompileOnly "org.projectlombok:lombok:$lombokVersion"
+    testAnnotationProcessor "org.projectlombok:lombok:$lombokVersion"
 
     // Tests
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation "org.springframework.boot:spring-boot-starter-test"
+    testImplementation "org.springframework.security:spring-security-test"
 }
 
 tasks.withType(Checkstyle) {
     maxWarnings 0
     maxErrors 0
     reports {
-        xml.enabled = false
-        html.enabled = true
-        html.stylesheet resources.text.fromFile('config/xsl/checkstyle-noframes-severity-sorted.xsl')
+        xml.required = false
+        html.required = true
+        html.stylesheet resources.text.fromFile("config/xsl/checkstyle-noframes-severity-sorted.xsl")
     }
 }

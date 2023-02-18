@@ -18,7 +18,7 @@ import javafx.stage.Window;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import shaart.pstorage.config.PStorageProperties;
+import shaart.pstorage.config.PstorageProperties;
 import shaart.pstorage.dto.CryptoDto;
 import shaart.pstorage.dto.CryptoResult;
 import shaart.pstorage.dto.UserDto;
@@ -56,7 +56,7 @@ public class LoginFormController {
   private SecurityAwareService securityAwareService;
 
   @Autowired
-  private PStorageProperties pstorageProperties;
+  private PstorageProperties pstorageProperties;
 
   // JavaFX Injections
   @FXML

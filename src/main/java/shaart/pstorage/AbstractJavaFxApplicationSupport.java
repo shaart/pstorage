@@ -31,14 +31,14 @@ public abstract class AbstractJavaFxApplicationSupport extends Application {
   private Stage splashScreen;
 
   /**
-   * Starting Spring Boot Application {@link PStorageApplication}.
+   * Starting Spring Boot Application {@link PstorageApplication}.
    *
    * @param args application arguments
    */
   static void launchApp(String[] args) {
     log.trace("Launching the application");
     AbstractJavaFxApplicationSupport.savedArgs = args;
-    Application.launch(PStorageApplication.class, args);
+    Application.launch(PstorageApplication.class, args);
   }
 
   @Override

@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Lazy;
-import shaart.pstorage.config.PStorageProperties;
+import shaart.pstorage.config.PstorageProperties;
 import shaart.pstorage.dto.ViewHolder;
 import shaart.pstorage.handler.GlobalExceptionHandler;
 import shaart.pstorage.ui.SystemTrayIcon;
@@ -24,8 +24,8 @@ import shaart.pstorage.util.ExceptionUtil;
 @Lazy
 @Slf4j
 @SpringBootApplication
-@EnableConfigurationProperties(PStorageProperties.class)
-public class PStorageApplication extends AbstractJavaFxApplicationSupport {
+@EnableConfigurationProperties(PstorageProperties.class)
+public class PstorageApplication extends AbstractJavaFxApplicationSupport {
 
   @Value("${pstorage.ui.title:PStorage}")
   private String windowTitle;

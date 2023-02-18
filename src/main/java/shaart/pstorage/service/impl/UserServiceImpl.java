@@ -2,11 +2,11 @@ package shaart.pstorage.service.impl;
 
 import static java.util.Objects.isNull;
 
+import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import shaart.pstorage.converter.UserConverter;

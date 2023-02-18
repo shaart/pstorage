@@ -1,6 +1,6 @@
 package shaart.pstorage.exception;
 
-public class CryptoException extends PStorageException {
+public class CryptoException extends PstorageException {
 
   public CryptoException(Exception e) {
     super(e);

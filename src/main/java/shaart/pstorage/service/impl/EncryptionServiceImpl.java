@@ -2,13 +2,13 @@ package shaart.pstorage.service.impl;
 
 import static java.util.Objects.isNull;
 
+import jakarta.annotation.PostConstruct;
 import java.util.EnumMap;
 import java.util.Map;
-import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import shaart.pstorage.config.PStorageProperties;
+import shaart.pstorage.config.PstorageProperties;
 import shaart.pstorage.crypto.Coder;
 import shaart.pstorage.dto.CryptoDto;
 import shaart.pstorage.dto.CryptoResult;
@@ -22,7 +22,7 @@ import shaart.pstorage.service.EncryptionService;
 @RequiredArgsConstructor
 public class EncryptionServiceImpl implements EncryptionService {
 
-  private final PStorageProperties pstorageProperties;
+  private final PstorageProperties pstorageProperties;
   private final Coder coder;
   private Map<EncryptionType, Coder> codersMap = new EnumMap<>(EncryptionType.class);
 

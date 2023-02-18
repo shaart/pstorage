@@ -4,11 +4,11 @@ import javafx.scene.Parent;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import shaart.pstorage.PStorageApplication;
+import shaart.pstorage.PstorageApplication;
 
 /**
  * Wrapper. Controller should be bean. View will be used in entrypoint at {@link
- * PStorageApplication}.
+ * PstorageApplication}.
  */
 @Getter
 @Setter

@@ -10,6 +10,7 @@ public interface ViewLoader {
 
   /**
    * Load a view using FXML loader and FXML injections.
+   *
    * @param resourceUrl path to resource
    * @return wrapper with view and controller
    */

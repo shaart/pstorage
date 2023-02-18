@@ -1,12 +1,17 @@
 package shaart.pstorage.service.impl;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
 import shaart.pstorage.SpringAbstractTest;
-import shaart.pstorage.config.PStorageProperties;
+import shaart.pstorage.config.PstorageProperties;
 import shaart.pstorage.crypto.impl.AesCoder;
 import shaart.pstorage.dto.CryptoDto;
 import shaart.pstorage.exception.CryptoException;
@@ -14,7 +19,7 @@ import shaart.pstorage.exception.CryptoException;
 public class EncryptionServiceImplTest extends SpringAbstractTest {
 
   @Autowired
-  private PStorageProperties properties;
+  private PstorageProperties properties;
 
   @Autowired
   private AesCoder aesCoder;
@@ -22,7 +27,7 @@ public class EncryptionServiceImplTest extends SpringAbstractTest {
   @InjectMocks
   private EncryptionServiceImpl encryptionService;
 
-  @Before
+  @BeforeEach
   public void init() {
     encryptionService = new EncryptionServiceImpl(properties, aesCoder);
   }
@@ -33,9 +38,9 @@ public class EncryptionServiceImplTest extends SpringAbstractTest {
 
     final String encrypted = encryptionService.encrypt(CryptoDto.of(initial)).getValue();
 
-    Assert.assertNotNull(encrypted);
+    assertNotNull(encrypted);
 
-    Assert.assertNotEquals(initial, encrypted);
+    assertNotEquals(initial, encrypted);
   }
 
   @Test
@@ -45,14 +50,17 @@ public class EncryptionServiceImplTest extends SpringAbstractTest {
     final String encrypted = encryptionService.encrypt(CryptoDto.of(initial)).getValue();
     final String encryptedAgain = encryptionService.encrypt(CryptoDto.of(initial)).getValue();
 
-    Assert.assertNotNull(encrypted);
-    Assert.assertNotNull(encryptedAgain);
+    assertNotNull(encrypted);
+    assertNotNull(encryptedAgain);
 
-    Assert.assertNotEquals(initial, encrypted);
-    Assert.assertNotEquals(initial, encryptedAgain);
+    assertNotEquals(initial, encrypted);
+    assertNotEquals(initial, encryptedAgain);
 
-    Assert.assertEquals("Encryption of same string in different places should be the same",
-        encrypted, encryptedAgain);
+    assertEquals(
+        encrypted,
+        encryptedAgain,
+        "Encryption of same string in different places should be the same"
+    );
   }
 
   @Test
@@ -67,14 +75,17 @@ public class EncryptionServiceImplTest extends SpringAbstractTest {
     final String encryptedWithSecond = encryptionService.encrypt(CryptoDto.of(initial), secondKey)
         .getValue();
 
-    Assert.assertNotNull(encryptedWithFirst);
-    Assert.assertNotNull(encryptedWithSecond);
+    assertNotNull(encryptedWithFirst);
+    assertNotNull(encryptedWithSecond);
 
-    Assert.assertNotEquals(initial, encryptedWithFirst);
-    Assert.assertNotEquals(initial, encryptedWithSecond);
+    assertNotEquals(initial, encryptedWithFirst);
+    assertNotEquals(initial, encryptedWithSecond);
 
-    Assert.assertNotEquals("Encrypting same string with different keys should be different",
-        encryptedWithFirst, encryptedWithSecond);
+    assertNotEquals(
+        encryptedWithFirst,
+        encryptedWithSecond,
+        "Encrypting same string with different keys should be different"
+    );
   }
 
   @Test
@@ -85,8 +96,8 @@ public class EncryptionServiceImplTest extends SpringAbstractTest {
 
     final String decrypted = encryptionService.decrypt(CryptoDto.of(encrypted)).getValue();
 
-    Assert.assertNotNull(decrypted);
-    Assert.assertEquals(initial, decrypted);
+    assertNotNull(decrypted);
+    assertEquals(initial, decrypted);
   }
 
   @Test
@@ -100,11 +111,11 @@ public class EncryptionServiceImplTest extends SpringAbstractTest {
     final String decrypted = encryptionService.decrypt(CryptoDto.of(encryptedWithFirst), key)
         .getValue();
 
-    Assert.assertNotNull(decrypted);
-    Assert.assertEquals(initial, decrypted);
+    assertNotNull(decrypted);
+    assertEquals(initial, decrypted);
   }
 
-  @Test(expected = CryptoException.class)
+  @Test
   public void decryptWithWrongKey() {
     final String initial = "initialTestPassword";
 
@@ -114,7 +125,9 @@ public class EncryptionServiceImplTest extends SpringAbstractTest {
     final String encryptedWithFirst = encryptionService.encrypt(CryptoDto.of(initial), key)
         .getValue();
 
-    encryptionService.decrypt(CryptoDto.of(encryptedWithFirst), wrongKey);
+    Executable executable = () -> encryptionService.decrypt(CryptoDto.of(encryptedWithFirst),
+        wrongKey);
+    assertThrows(CryptoException.class, executable);
   }
 
   @Test
@@ -126,8 +139,8 @@ public class EncryptionServiceImplTest extends SpringAbstractTest {
     final String encryptedWithFirst = encryptionService.encrypt(CryptoDto.of(initial), firstKey)
         .getValue();
 
-    Assert.assertNotNull(encryptedWithFirst);
-    Assert.assertNotEquals(initial, encryptedWithFirst);
+    assertNotNull(encryptedWithFirst);
+    assertNotEquals(initial, encryptedWithFirst);
   }
 
   @Test
@@ -139,7 +152,7 @@ public class EncryptionServiceImplTest extends SpringAbstractTest {
     final String encryptedWithFirst = encryptionService.encrypt(CryptoDto.of(initial), firstKey)
         .getValue();
 
-    Assert.assertNotNull(encryptedWithFirst);
-    Assert.assertNotEquals(initial, encryptedWithFirst);
+    assertNotNull(encryptedWithFirst);
+    assertNotEquals(initial, encryptedWithFirst);
   }
 }

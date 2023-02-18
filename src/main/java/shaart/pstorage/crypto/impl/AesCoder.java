@@ -1,5 +1,6 @@
 package shaart.pstorage.crypto.impl;
 
+import jakarta.annotation.PostConstruct;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
@@ -9,7 +10,6 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 import java.util.Arrays;
 import java.util.Base64;
-import javax.annotation.PostConstruct;
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
@@ -52,20 +52,20 @@ public class AesCoder implements Coder {
 
   @Override
   public String decrypt(String toBeDecrypted, String key) {
-    final byte[] secureIV = generateSecureIV(key);
+    final byte[] secureIv = generateSecureIv(key);
 
     final byte[] salt = generateSalt(key);
     final SecretKey secretKey = generateEncryptionKey(key, salt);
 
-    return decrypt(secretKey, secureIV, toBeDecrypted);
+    return decrypt(secretKey, secureIv, toBeDecrypted);
   }
 
   /**
    * Decrypt toBeDecrypted using the secret and passed iv.
    */
-  private String decrypt(SecretKey secret, byte[] encodedIV,
+  private String decrypt(SecretKey secret, byte[] encodedIv,
       String toBeDecrypted) {
-    byte[] iv = Base64.getDecoder().decode(encodedIV);
+    byte[] iv = Base64.getDecoder().decode(encodedIv);
     AlgorithmParameterSpec ivParameterSpec = new IvParameterSpec(iv);
 
     byte[] decryptedValue;
@@ -88,16 +88,16 @@ public class AesCoder implements Coder {
     final byte[] salt = generateSalt(key);
 
     final SecretKey secretKey = generateEncryptionKey(key, salt);
-    final byte[] encodedIV = generateSecureIV(key);
+    final byte[] encodedIv = generateSecureIv(key);
 
-    return encrypt(secretKey, encodedIV, toBeEncrypted);
+    return encrypt(secretKey, encodedIv, toBeEncrypted);
   }
 
   /**
    * Encrypt given toBeEncrypted with passed SecretKey and IV.
    */
-  private String encrypt(SecretKey secret, byte[] encodedIV, String toBeEncrypted) {
-    byte[] iv = Base64.getDecoder().decode(encodedIV);
+  private String encrypt(SecretKey secret, byte[] encodedIv, String toBeEncrypted) {
+    byte[] iv = Base64.getDecoder().decode(encodedIv);
     AlgorithmParameterSpec ivParameterSpec = new IvParameterSpec(iv);
     byte[] encryptedValue;
 
@@ -153,7 +153,7 @@ public class AesCoder implements Coder {
    * @param masterPassword main password (key)
    * @return a secure IV array
    */
-  private byte[] generateSecureIV(String masterPassword) {
+  private byte[] generateSecureIv(String masterPassword) {
     byte[] resultBytes = new byte[IV_LENGTH];
     byte[] bytes = masterPassword.getBytes(StandardCharsets.UTF_8);
     if (bytes.length > IV_LENGTH) {

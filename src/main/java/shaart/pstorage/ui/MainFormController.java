@@ -1,5 +1,6 @@
 package shaart.pstorage.ui;
 
+import jakarta.annotation.PostConstruct;
 import java.util.List;
 import java.util.Optional;
 import javafx.collections.FXCollections;
@@ -14,7 +15,6 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
-import javax.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;

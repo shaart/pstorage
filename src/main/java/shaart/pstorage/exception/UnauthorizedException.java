@@ -1,6 +1,9 @@
 package shaart.pstorage.exception;
 
-public class UnauthorizedException extends PStorageException {
+/**
+ * Cannot determine user.
+ */
+public class UnauthorizedException extends PstorageException {
 
   public UnauthorizedException(String message) {
     super(message);

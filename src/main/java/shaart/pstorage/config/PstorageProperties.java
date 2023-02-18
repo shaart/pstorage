@@ -8,7 +8,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Setter
 @SuppressWarnings("WeakerAccess")
 @ConfigurationProperties(prefix = "pstorage")
-public class PStorageProperties {
+public class PstorageProperties {
 
   private Validation validation;
   private Ui ui;
